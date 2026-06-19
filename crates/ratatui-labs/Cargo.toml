@@ -1,0 +1,20 @@
+[package]
+name = "ratatui-labs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "Reserved for Ratatui labs-style experiments and prototype Ratatui work."
+documentation = "https://docs.rs/ratatui-labs"
+readme = "README.md"
+include = ["Cargo.toml", "README.md", "src/lib.rs"]
+
+[package.metadata.ratatui-reservation]
+area = "Experimental APIs"
+future_scope = "labs-style experiments and prototype Ratatui work"
+
+[lints]
+workspace = true
