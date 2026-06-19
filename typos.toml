@@ -1,0 +1,8 @@
+[files]
+extend-exclude = [
+    "**/CHANGELOG.md",
+    "target/**",
+]
+
+[default.extend-words]
+ratatui = "ratatui"

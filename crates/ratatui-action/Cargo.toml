@@ -1,10 +1,11 @@
 [package]
 name = "ratatui-action"
-version = "0.0.0"
+version = "0.1.0"
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
 homepage.workspace = true
+rust-version.workspace = true
 keywords.workspace = true
 categories.workspace = true
 description = "Experimental semantic action model for Ratatui applications."

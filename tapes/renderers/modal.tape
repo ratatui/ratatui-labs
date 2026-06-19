@@ -5,7 +5,6 @@ Output target/betamax/renderers/modal.json
 Require cargo
 
 Set Shell "bash"
-Set Theme "GitHub Dark"
 Set Width 1200
 Set Height 620
 Set WindowBar Colorful
@@ -15,7 +14,7 @@ Set CursorBlink false
 Set WaitTimeout 30s
 
 Hide
-Type "cd /Users/joshka/local/ratatui-labs/default"
+Type "cd \"$REPO_DIR\""
 Enter
 Wait
 Type "cargo run --quiet -p ratatui-command-palette --example command-palette -- --renderer modal"
