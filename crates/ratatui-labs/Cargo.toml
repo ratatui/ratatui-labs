@@ -10,7 +10,7 @@ categories.workspace = true
 description = "Reserved for Ratatui labs-style experiments and prototype Ratatui work."
 documentation = "https://docs.rs/ratatui-labs"
 readme = "README.md"
-include = ["Cargo.toml", "README.md", "src/lib.rs"]
+include = ["Cargo.toml", "README.md", "src/**/*.rs"]
 
 [package.metadata.ratatui-reservation]
 area = "Experimental APIs"
