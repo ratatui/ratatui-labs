@@ -55,7 +55,9 @@ betamax tape="":
     mkdir -p target/betamax/renderers
     betamax="${BETAMAX_BIN:-}"; \
     if [ -z "$betamax" ]; then \
-        if [ -x ../../betamax/target/debug/betamax ]; then \
+        if command -v betamax >/dev/null 2>&1; then \
+            betamax="betamax"; \
+        elif [ -x ../../betamax/target/debug/betamax ]; then \
             betamax="../../betamax/target/debug/betamax"; \
         else \
             cargo build --manifest-path ../../betamax/Cargo.toml; \
