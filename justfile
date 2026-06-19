@@ -23,4 +23,4 @@ validate: fmt-check check clippy test lint-md
 betamax tape="tapes/jk-log-ui.tape":
     test -f "{{tape}}" || { echo "missing Betamax tape: {{tape}}" >&2; exit 1; }
     mkdir -p target/betamax
-    cargo run --manifest-path ../betamax/Cargo.toml -- run "{{tape}}"
+    cargo run --manifest-path ../../betamax/Cargo.toml -- run "{{tape}}"

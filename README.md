@@ -10,6 +10,12 @@ grow into real experiments when there is a concrete design to test.
 
 - `crates/ratatui-labs` - placeholder for labs-style experiments and prototype Ratatui work.
 
+## Examples
+
+```sh
+cargo run --example command-palette
+```
+
 ## Validation
 
 ```sh

@@ -4,6 +4,9 @@
 //! row. Applications own dispatch and side effects: accepting a row returns an
 //! event that the application can handle.
 
+#[path = "command_palette/render.rs"]
+pub mod render;
+
 use crate::action::{ActionId, ActionInvocation, ActionSpec, Availability, InvocationSource};
 
 /// Interaction mode for the command palette.
@@ -132,18 +135,21 @@ impl PaletteState {
 
     /// Replaces the query and clamps selection to the filtered result set.
     pub fn set_query(&mut self, query: impl Into<String>, actions: &[ActionSpec]) {
+        self.mode = PaletteMode::Searching;
         self.query = query.into();
         self.clamp_selection(actions);
     }
 
     /// Appends a character to the query and clamps selection.
     pub fn push_query_char(&mut self, character: char, actions: &[ActionSpec]) {
+        self.mode = PaletteMode::Searching;
         self.query.push(character);
         self.clamp_selection(actions);
     }
 
     /// Removes the final query character and clamps selection.
     pub fn pop_query_char(&mut self, actions: &[ActionSpec]) -> Option<char> {
+        self.mode = PaletteMode::Searching;
         let character = self.query.pop();
         self.clamp_selection(actions);
         character
@@ -395,6 +401,25 @@ mod tests {
                 input_index: 0,
             }
         );
+    }
+
+    #[test]
+    fn editing_query_returns_to_searching_mode() {
+        let mut action = ActionSpec::new("theme.switch", "Switch Theme");
+        action.inputs.push(ActionInput::Choice {
+            id: "theme".into(),
+            label: "Theme".into(),
+            choices: Vec::new(),
+        });
+        let actions = vec![action];
+
+        let mut state = PaletteState::new();
+        state.open(&actions);
+        state.accept(&actions);
+
+        state.push_query_char('q', &actions);
+
+        assert_eq!(state.mode(), &PaletteMode::Searching);
     }
 
     #[test]

@@ -56,6 +56,29 @@ scrolling, colors, wrapping, keyboard interactions, and jj-rendered template out
 for state and action behavior, but use Betamax as evidence that the actual terminal rendering and
 interaction sequence work.
 
+Betamax is still experimental. When Ratatui Labs work exposes tape ergonomics, diagnostics, cwd
+handling, artifact inspection, or TUI-capture gaps, capture concrete improvement ideas instead of
+treating them as incidental local friction. Good feedback should include the tape command, observed
+artifact or error, expected testing workflow, and why the improvement would make Betamax a better
+terminal-rendering test tool.
+
+When a Betamax GIF or video will be shown to a person, pace it for review rather than raw execution
+speed. Use these defaults unless the content needs a different rhythm:
+
+- For typing, use visible but quick input, then pause about 300-500 ms before `Enter`.
+- For selection moves, expansion/collapse, and other simple state changes, leave about 300-700 ms
+  after the key press so the change is perceivable.
+- For a stable screen with a small amount of text, hold about 1.5-2.5 seconds.
+- For dense output, estimate reading time at roughly 200 words per minute plus a short orientation
+  buffer. Prefer checkpoint PNG/state artifacts over very long animated holds.
+- For the final state of a shareable GIF, hold about 4-5 seconds so viewers can inspect the result
+  before the loop restarts.
+- Avoid long animated loops. If the viewer needs more than a few seconds to inspect details, provide
+  a PNG and state JSON alongside the GIF.
+
+Treat these as presentation defaults, not assertions. Test waits should still wait for semantic
+screen content, not sleep for a fixed presentation duration.
+
 ## Documentation Guidelines
 
 Treat docs as part of the behavior contract. Document current behavior, not planned behavior, except

@@ -7,6 +7,7 @@ pub use action::{
     ActionArgs, ActionChoice, ActionId, ActionInput, ActionInvocation, ActionSpec, Availability,
     InputId, InvocationSource,
 };
+pub use command_palette::render::{ModalRenderer, PaletteRenderer};
 pub use command_palette::{
     MoveSelection, PaletteEvent, PaletteMode, PaletteRow, PaletteState, PaletteView,
 };

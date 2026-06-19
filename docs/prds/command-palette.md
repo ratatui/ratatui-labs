@@ -529,6 +529,18 @@ rendered terminal output and interaction timeline. PTY smoke tests remain useful
 lifecycle checks, but they do not prove color, spacing, wrapping, row highlighting, or terminal
 layout.
 
+This experiment should also feed useful testing-tool ideas back into Betamax. Betamax is still new,
+so friction with tape authoring, cwd handling, wait diagnostics, artifact inspection, alternate
+screen capture, keyboard input, or state assertions should be recorded as concrete Betamax feedback
+when it affects the command palette validation workflow.
+
+When Betamax artifacts are presented to reviewers, the tape should be paced for human inspection.
+Use short delays for input, longer holds for stable UI states, and checkpoint PNG/state artifacts
+when the viewer needs to read details. A useful starting rhythm is 300-500 ms between typed input
+and submission, 300-700 ms after simple UI transitions, 1.5-2.5 seconds for a simple stable screen,
+reading-time-based holds for dense output, and 4-5 seconds on the final GIF state before the loop
+restarts.
+
 ## Validation
 
 Run:

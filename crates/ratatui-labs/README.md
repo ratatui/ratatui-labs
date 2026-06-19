@@ -19,6 +19,18 @@ The palette does not own application state or execute application callbacks.
 It consumes action metadata and emits invocation or lifecycle events that the
 application handles.
 
+Run the first interactive example with:
+
+```sh
+cargo run --example command-palette
+```
+
+Rendered validation for this example is captured by the repository Betamax tape:
+
+```sh
+just betamax
+```
+
 The crate points at the main Ratatui project rather than a separate
 implementation repository:
 
