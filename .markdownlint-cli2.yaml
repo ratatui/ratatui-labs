@@ -1,3 +1,9 @@
 config:
-  MD013:
+  line-length:
     line_length: 100
+    tables: false
+  table-pipe-style:
+    style: leading_and_trailing
+  table-column-style:
+    style: aligned
+    aligned_delimiter: true
