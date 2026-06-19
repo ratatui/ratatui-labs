@@ -5,17 +5,26 @@
 This repository is a Rust workspace for experimental Ratatui crates and prototypes.
 
 - `Cargo.toml` defines the workspace and shared package metadata.
-- `crates/ratatui-labs/` is the initial placeholder crate copied from the reservation pattern.
-- `crates/*/src/lib.rs` should contain library code or placeholder crate docs.
+- `crates/ratatui-action/` owns semantic action identifiers, metadata, inputs, and invocations.
+- `crates/ratatui-command-palette/` owns command palette state, rendering, preview, and examples.
+- `crates/ratatui-labs/` is the umbrella crate for labs-style experiments and namespaced crate
+  access.
+- `crates/*/src/lib.rs` should be a crate overview and module map, not the default home for broad
+  implementation.
+- `crates/ratatui-command-palette/src/state.rs` owns the state machine API; key adapters,
+  matching, selection, shortcut labels, rendering, view data, and tests should stay in their named
+  modules.
 - `crates/*/README.md` is the public crate-facing documentation.
 
 Add new experiments as separate crates under `crates/` when they may grow independently.
 
-For early experiments inside an existing crate, organize modules around owned concepts instead of
-putting all code in one file or broad helper buckets. Prefer named files such as `action.rs`,
-`command_palette.rs`, and `command_palette/view.rs` over `mod.rs`, `utils.rs`, `common.rs`, or
-`types.rs` unless local structure clearly justifies the alternative. Keep weak abstractions close to
-their first use until multiple callers or a stable domain name prove they should move outward.
+For early experiments, organize crates and modules around owned concepts instead of putting all code
+in one file or broad helper buckets. Split `lib.rs` early when docs or implementation are likely to
+grow into hundreds of lines, unless the types have a strong single-file coherence. Prefer named
+crates and modules such as `ratatui-action`, `ratatui-command-palette`, `render/`, and `view.rs`
+over `utils.rs`, `common.rs`, or `types.rs` unless local structure clearly justifies the
+alternative. Keep weak abstractions close to their first use until multiple callers or a stable
+domain name prove they should move outward.
 
 ## Build, Test, and Development Commands
 
@@ -42,6 +51,17 @@ pattern, with directories matching package names, such as `crates/ratatui-labs`.
 
 Markdown prose should wrap at 100 columns unless a table or URL makes that impractical.
 
+## TUI Visual Style
+
+Do not default to bordered boxes around every region. Use borders when they clarify containment,
+focus, pane structure, or modality; otherwise prefer spacing, color, background, alignment, or text
+hierarchy. Pane-based applications can use borders well, but balance them with quieter unboxed
+status and header areas.
+
+When borders are useful, choose their weight and color deliberately. Ratatui includes plain,
+rounded, double, thick, dashed, and quadrant-style border types; use heavier or brighter borders
+sparingly for active panes or modal focus, and use muted or lighter borders for secondary panes.
+
 ## Testing Guidelines
 
 Place unit tests next to the code they exercise. Prefer focused tests that document expected
@@ -55,6 +75,18 @@ steps over PTY-only smoke tests for row selection, expansion/collapse behavior, 
 scrolling, colors, wrapping, keyboard interactions, and jj-rendered template output. Keep unit tests
 for state and action behavior, but use Betamax as evidence that the actual terminal rendering and
 interaction sequence work.
+
+Use Betamax's default font size unless a tape is intentionally demonstrating a presentation size.
+If a tape sets `FontSize`, document the reason near the tape or in the related PRD because larger
+fonts reduce useful terminal columns and can hide layout bugs.
+
+Use Betamax's default margin unless a tape intentionally demonstrates a decorated presentation.
+Default command-palette tapes should use enough width, currently `Set Width 1200`, for centered
+palettes and split panes to be visible without crowding.
+
+Do not check generated Betamax images, GIFs, videos, or state JSON into the repository. Keep them
+under `target/betamax/` and reference the local paths in review notes. These artifacts grow quickly
+and will bloat the repo over time.
 
 Betamax is still experimental. When Ratatui Labs work exposes tape ergonomics, diagnostics, cwd
 handling, artifact inspection, or TUI-capture gaps, capture concrete improvement ideas instead of

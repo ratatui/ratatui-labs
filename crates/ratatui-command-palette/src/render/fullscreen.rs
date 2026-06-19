@@ -12,7 +12,10 @@ use crate::view::PaletteView;
 ///
 /// The fullscreen renderer clears the whole supplied area and uses a header,
 /// query row, result list, and footer. Applications can pass the entire frame
-/// when command search should become the primary screen.
+/// when command search should become the primary screen. Use it through the
+/// [`PaletteRenderer`](super::PaletteRenderer) trait with a
+/// [`PaletteView`](crate::view::PaletteView) produced by
+/// [`PaletteState::view`](crate::state::PaletteState::view).
 #[derive(Clone, Debug)]
 pub struct FullscreenRenderer {
     title: String,
@@ -25,7 +28,7 @@ impl Default for FullscreenRenderer {
 }
 
 impl FullscreenRenderer {
-    /// Creates a fullscreen renderer with the default title.
+    /// Creates a [`FullscreenRenderer`] with the default title.
     pub fn new() -> Self {
         Self {
             title: "Command Palette".into(),
@@ -33,6 +36,8 @@ impl FullscreenRenderer {
     }
 
     /// Sets the title rendered in the fullscreen header.
+    ///
+    /// # Examples
     ///
     /// ```
     /// use ratatui_command_palette::render::FullscreenRenderer;

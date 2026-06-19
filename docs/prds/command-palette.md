@@ -7,9 +7,16 @@ Experimental.
 This document describes a command palette experiment for `ratatui-labs`. It is not a commitment to
 a published crate, a stable API, or inclusion in Ratatui core.
 
+Accepted tradeoffs are recorded in [architecture decision records](../adrs/):
+
+- [0001 Command Palette Crate Shape](../adrs/0001-command-palette-crate-shape.md)
+- [0002 Action API Construction And Field Visibility](../adrs/0002-action-api-construction-and-field-visibility.md)
+- [0003 Owned Palette View Data](../adrs/0003-owned-palette-view-data.md)
+- [0004 Betamax Rendered Validation](../adrs/0004-betamax-rendered-validation.md)
+
 The goal is to test whether Ratatui applications benefit from a reusable action model plus command
-palette presentation, and to identify the smallest API that could later justify focused crates such
-as `ratatui-action` and `ratatui-command-palette`.
+palette presentation, and to identify the smallest API that could justify keeping focused crates
+such as `ratatui-action` and `ratatui-command-palette`.
 
 ## Background
 
@@ -175,12 +182,16 @@ previews, dispatch invocations however they want, and build action lists dynamic
 Do not put the experiment into one large source file. Keep files named for the concepts they own,
 and prefer direct `name.rs` modules over broad helper buckets.
 
-Good early module owners:
+Good module owners:
 
-- `action.rs` for action identity, metadata, availability, and invocation types
-- `command_palette.rs` for palette state, events, filtering, and selection behavior
-- `command_palette/view.rs` only after the renderer needs a separate view model owner
-- `command_palette/render.rs` only after rendering exists
+- `id.rs` for action and input identifiers
+- `input.rs` for input declarations and choice values
+- `invocation.rs` for resolved arguments and invocation requests
+- `spec.rs` for action metadata and availability
+- `event.rs` for palette events, movement, and interaction mode
+- `state.rs` for filtering, selection, input collection, previews, and invocation emission
+- `view.rs` for renderable view snapshots and rows
+- `render/` for Ratatui drawing code
 
 Keep weak abstractions close to their first use. Move them outward only after they have earned an
 independent concept name or multiple callers depend on the same stable boundary.
@@ -230,7 +241,9 @@ introduced behind a trait or feature once the rest of the API feels right.
 
 ### Selecting
 
-Users can move selection with `Up`, `Down`, `PageUp`, `PageDown`, `Home`, and `End`.
+Users can move selection with `Up`, `Down`, `PageUp`, `PageDown`, `Home`, and `End`. Relative
+movement wraps at the top and bottom of the visible result set; `Home` and `End` jump to absolute
+boundaries.
 
 ### Invoking
 
@@ -275,15 +288,19 @@ pub struct ActionId(String);
 
 ```rust
 pub struct ActionSpec {
-    pub id: ActionId,
-    pub title: String,
-    pub description: Option<String>,
-    pub category: Option<String>,
-    pub keywords: Vec<String>,
-    pub inputs: Vec<ActionInput>,
-    pub availability: Availability,
+    id: ActionId,
+    title: String,
+    description: Option<String>,
+    category: Option<String>,
+    keywords: Vec<String>,
+    inputs: Vec<ActionInput>,
+    availability: Availability,
 }
 ```
+
+`ActionSpec` should expose constructors, accessors, and builder-style modifiers. The fields carry
+API invariants and should not be public until the experiment proves that direct struct literals are
+worth the compatibility cost.
 
 ```rust
 pub enum Availability {
@@ -314,19 +331,27 @@ pub enum ActionInput {
 
 ```rust
 pub struct ActionChoice {
-    pub value: String,
-    pub label: String,
-    pub description: Option<String>,
+    value: String,
+    label: String,
+    description: Option<String>,
 }
 ```
 
+`ActionChoice` should expose constructors, accessors, and builder-style modifiers. The stable
+choice value becomes part of resolved invocation arguments, so callers should not depend on direct
+field mutation.
+
 ```rust
 pub struct ActionInvocation {
-    pub id: ActionId,
-    pub args: ActionArgs,
-    pub source: InvocationSource,
+    id: ActionId,
+    args: ActionArgs,
+    source: InvocationSource,
 }
 ```
+
+`ActionInvocation` should also keep fields private. Constructing invocations through
+`ActionInvocation::new` or `ActionInvocation::with_args` keeps argument and source handling
+consistent across palette, keybinding, menu, mouse, and automation surfaces.
 
 ```rust
 pub enum InvocationSource {
@@ -359,6 +384,7 @@ pub struct PaletteState {
     query: String,
     selected: Option<usize>,
     mode: PaletteMode,
+    args: ActionArgs,
 }
 ```
 
@@ -376,25 +402,28 @@ pub enum PaletteMode {
 Renderers should consume a prepared view model.
 
 ```rust
-pub struct PaletteView<'a> {
-    pub query: &'a str,
-    pub rows: &'a [PaletteRow],
-    pub selected: Option<usize>,
-    pub preview: Option<&'a PalettePreview>,
-    pub mode: PaletteModeView<'a>,
+pub struct PaletteView {
+    prompt: String,
+    query: String,
+    rows: Vec<PaletteRow>,
+    selected: Option<usize>,
+    mode: PaletteMode,
 }
 ```
 
 ```rust
 pub struct PaletteRow {
-    pub action_id: ActionId,
-    pub title: String,
-    pub subtitle: Option<String>,
-    pub category: Option<String>,
-    pub shortcut: Option<String>,
-    pub availability: Availability,
+    action_id: ActionId,
+    title: String,
+    subtitle: Option<String>,
+    category: Option<String>,
+    shortcut: Option<String>,
+    availability: Availability,
 }
 ```
+
+`PaletteView` and `PaletteRow` should expose accessors rather than public fields. Renderers should
+depend on the view contract, not the current storage representation.
 
 This separates:
 
@@ -402,11 +431,19 @@ This separates:
 action model -> matching/ranking -> palette view -> renderer
 ```
 
+The labs implementation currently uses owned `String` and `Vec` fields in `PaletteView`. That is an
+intentional experiment-stage simplification: owned view data is easy to test, snapshot, render, and
+debug while the API is still moving. Before stabilizing or publishing these APIs, revisit whether
+the view should borrow data with lifetimes. Accessors already hide the storage representation so
+that a future borrowed view can be evaluated without first breaking every renderer. Rendering is a
+frequent operation, so a stable API should avoid unnecessary allocation once the view shape is
+proven.
+
 ## Renderer Hypothesis
 
 ```rust
 pub trait PaletteRenderer {
-    fn render(&self, area: Rect, buf: &mut Buffer, view: PaletteView<'_>);
+    fn render(&self, area: Rect, buf: &mut Buffer, view: &PaletteView);
 }
 ```
 
@@ -436,42 +473,51 @@ Do not add a matcher trait until the concrete implementation shows where it belo
 
 ## Crate and Module Shape
 
-During the experiment, start with named modules inside the existing labs crate:
+The current experiment uses named crates for the concept owners and small modules inside those
+crates:
 
 ```text
-crates/ratatui-labs/src/action.rs
-crates/ratatui-labs/src/command_palette.rs
-```
-
-Split into directories only when the concept has enough internal structure to justify it:
-
-```text
-crates/ratatui-labs/src/action/
-crates/ratatui-labs/src/command_palette/
+crates/ratatui-action/src/lib.rs
+crates/ratatui-action/src/id.rs
+crates/ratatui-action/src/input.rs
+crates/ratatui-action/src/invocation.rs
+crates/ratatui-action/src/spec.rs
+crates/ratatui-command-palette/src/lib.rs
+crates/ratatui-command-palette/src/event.rs
+crates/ratatui-command-palette/src/render/
+crates/ratatui-command-palette/src/state.rs
+crates/ratatui-command-palette/src/view.rs
 ```
 
 Avoid broad `utils`, `common`, `helpers`, or `types` modules. File names should make ownership and
-review scope obvious.
+review scope obvious. `lib.rs` should stay a crate overview and module map unless the crate has a
+genuinely small, coherent surface.
 
-Do not create a published `ratatui-action` or `ratatui-command-palette` crate until the experiment
-has enough evidence.
+The experiment now uses separate workspace crates for the semantic action model and command
+palette. These crates are still experimental labs crates; do not treat them as stable published APIs
+until the experiment has enough evidence.
 
-The future extraction target, if successful, is likely:
+The crate ownership is:
 
 ```text
 ratatui-action
-  ActionId
-  ActionSpec
-  ActionInput
-  ActionInvocation
-  Availability
+  id          ActionId, InputId
+  input       ActionInput, ActionChoice
+  invocation  ActionArgs, ActionInvocation, InvocationSource
+  spec        ActionSpec, Availability
 
 ratatui-command-palette
-  PaletteState
-  PaletteEvent
-  PaletteView
-  PaletteRenderer
-  built-in renderers
+  event  PaletteEvent, PaletteMode, MoveSelection
+  key    normalized key commands and crossterm conversion
+  matching default query filtering
+  state  PaletteState
+  view   PaletteView, PaletteRow
+  render PaletteRenderer, built-in renderers
+  shortcut presentation-only shortcut labels
+
+ratatui-labs
+  action           ratatui-action namespace
+  command_palette  ratatui-command-palette namespace
 ```
 
 ## Example Application
@@ -486,23 +532,15 @@ layout.reset
 debug.toggle
 ```
 
-The example should demonstrate opening the palette, searching, moving selection, invoking an action,
-disabled action rendering, argument collection for theme switching, and optional preview events for
-theme switching.
+The example should demonstrate opening the palette, searching, scrolling, moving selection,
+invoking an action, disabled action rendering, text input, choice input, boolean input, preview
+events, and cancellation rollback for transient previews.
 
-Suggested path:
-
-```text
-examples/command-palette.rs
-```
-
-or:
+Current path:
 
 ```text
-examples/command-palette/
+crates/ratatui-command-palette/examples/command-palette.rs
 ```
-
-depending on repository conventions.
 
 ## Testing and Visual Validation
 
@@ -512,6 +550,14 @@ invocation event emission, argument collection, cancel behavior, and preview eve
 Use Betamax as the terminal-rendering validation path once the experiment changes visible TUI
 behavior. Betamax should render the real example application and capture artifacts under
 `target/betamax/`, including PNG, GIF, and terminal state output where useful.
+
+Keep two tape categories:
+
+- behavioral validation tapes that cover interaction sequences, state changes, and regressions
+- rendered example tapes that showcase each built-in renderer with meaningful visible options
+
+Use the Betamax default font size for both categories unless the tape intentionally demonstrates a
+specific presentation size.
 
 Prefer adding or updating Betamax tape steps when a change affects:
 
@@ -590,47 +636,70 @@ Success criteria:
 - app dispatch remains external
 - unit tests cover event behavior
 
-### Milestone 4: First renderer and example
+### Milestone 4: First renderers and examples
 
-Add a modal renderer and an example app.
+Add built-in renderers and example apps.
 
 Success criteria:
 
 - usable in an example app
+- modal, flat overlay, split preview, fullscreen, and inline dropdown renderers consume the same
+  view model
+- examples demonstrate switching renderers and comparing the built-in renderer set
 - renderer consumes a view model
 - renderer does not perform matching or dispatch
 - Betamax tape captures the real example and visible interaction sequence
 
-### Milestone 5: Argument collection and preview
+### Milestone 5: Argument collection, preview, and rendered interaction coverage
 
-Add choice input collection and preview change events.
+Add inline text, choice, and boolean input collection plus preview change events.
 
 Success criteria:
 
 - theme-switching example can preview values
+- search example can collect text inline
+- debug example can collect a boolean value inline
 - cancelling can roll back previews at the app level
-- Betamax artifacts show preview, cancellation, and selection behavior
+- renderer scrolls the selected row into view
+- Betamax artifacts show scrolling, preview, cancellation, text input, boolean input, and selection
+  behavior
 
 ### Milestone 6: Extraction decision
 
-Decide whether the experiment justifies:
+Decision: keep the extracted crate shape.
+
+The experiment justifies keeping the focused crates:
 
 ```text
 ratatui-action
 ratatui-command-palette
 ```
 
-or should remain in labs.
+The split reflects a real ownership boundary. `ratatui-labs` remains a namespaced facade for the
+experiment rather than the implementation owner.
 
-## Open Questions
+## Defaults Chosen
 
-1. Should `ActionSpec` use `String`, `Cow<'static, str>`, or Ratatui `Line<'static>`?
-1. Should shortcuts live in `ActionSpec`, or in a separate keymap model?
-1. Should disabled actions be visible by default in the palette?
-1. Should hidden actions be searchable with an explicit mode?
-1. Should choice inputs support dynamic choices?
-1. Should preview be a property of an action or only an event emitted by palette state?
-1. Should fuzzy matching be built in, optional, or delegated?
-1. How much styling should renderers expose?
-1. Should recent or frequent command ranking exist in labs, or be left to applications?
-1. What is the smallest compelling example app?
+These defaults are intentionally conservative and can be revisited with evidence from additional
+examples:
+
+1. `ActionSpec` stores owned `String` values. This keeps the experiment easy to construct,
+   snapshot, and render. Public accessors return borrowed string slices or iterators so storage can
+   change later.
+1. Shortcuts stay out of `ActionSpec`. They are context-specific keymap presentation, represented
+   by `ShortcutLabels` when building a palette view.
+1. Disabled actions are visible by default and cannot be accepted.
+1. Hidden actions are omitted from ordinary search results. There is no hidden-search mode yet.
+1. Choice inputs use static choices in `ActionInput::Choice`. Dynamic choices remain application
+   owned until multiple examples prove a reusable shape.
+1. Preview is emitted as `PaletteEvent::PreviewChanged`, not stored as an action property.
+1. Matching is case-insensitive substring matching over title, category, and keywords. Fuzzy
+   matching, recency, frequency, and context ranking are delegated to applications for now.
+1. Renderer styling stays minimal. Built-in renderers expose titles only. More style knobs should
+   wait until examples prove which options are stable concepts.
+1. Crossterm integration is a small adapter: `PaletteKey::from_crossterm` converts backend key
+   events into palette commands, while applications retain policy decisions such as whether `Esc`
+   exits or cancels.
+1. The smallest compelling example is the current command palette demo: it covers search,
+   scrolling, disabled rows, text input, choice input, boolean input, preview, cancellation, and
+   invocation.

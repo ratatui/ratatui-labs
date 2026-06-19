@@ -4,6 +4,10 @@
 //! Applications often have context-specific keymaps, and the same action can
 //! have different bindings in different screens. Keep those bindings in the
 //! application or keymap layer, then pass display labels into the palette view.
+//!
+//! Use [`ShortcutLabels::insert`] to attach presentation-only labels and
+//! [`PaletteState::view_with_shortcuts`](crate::state::PaletteState::view_with_shortcuts) to put
+//! them in a renderable view.
 
 use std::collections::BTreeMap;
 
@@ -11,8 +15,11 @@ use ratatui_action::id::ActionId;
 
 /// Display labels for action shortcuts.
 ///
-/// `ShortcutLabels` is a small presentation map. It does not parse key events,
+/// [`ShortcutLabels`] is a small presentation map. It does not parse key events,
 /// own keybinding precedence, or decide whether a keybinding is active.
+///
+/// Use [`new`](Self::new) to create a map, [`insert`](Self::insert) to add or replace labels,
+/// [`get`](Self::get) to read them, and [`is_empty`](Self::is_empty) for optional display logic.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ShortcutLabels {
     labels: BTreeMap<ActionId, String>,

@@ -6,6 +6,17 @@
 //! [`PaletteState::view`](crate::state::PaletteState::view). They do not filter
 //! actions, move selection, collect input, or dispatch invocations.
 //!
+//! Renderer choice:
+//!
+//! - [`ModalRenderer`] draws an interrupting bordered dialog.
+//! - [`FlatOverlayRenderer`] draws a borderless sheet over existing content.
+//! - [`SplitPreviewRenderer`] draws results and selected-row details side by side.
+//! - [`FullscreenRenderer`] uses the whole supplied area as the command surface.
+//! - [`InlineDropdownRenderer`] draws a compact embedded dropdown.
+//! - [`PaletteRenderer`] is the trait for custom renderers.
+//!
+//! # Examples
+//!
 //! ```
 //! use ratatui::buffer::Buffer;
 //! use ratatui::layout::Rect;
@@ -47,6 +58,42 @@ use crate::view::PaletteView;
 /// [`PaletteView`] model. Renderers should be pure drawing code: input handling
 /// and event dispatch stay with [`PaletteState`](crate::state::PaletteState)
 /// and the application.
+///
+/// Use [`PaletteRenderer::render`] when an application has already produced a
+/// [`PaletteView`] and only needs to draw it into a Ratatui buffer. Use a custom
+/// implementation when the built-in renderer layout is not a good fit.
+///
+/// # Examples
+///
+/// ```
+/// use ratatui::buffer::Buffer;
+/// use ratatui::layout::Rect;
+/// use ratatui::text::Line;
+/// use ratatui::widgets::{Paragraph, Widget};
+/// use ratatui_action::spec::ActionSpec;
+/// use ratatui_command_palette::render::PaletteRenderer;
+/// use ratatui_command_palette::state::PaletteState;
+/// use ratatui_command_palette::view::PaletteView;
+///
+/// struct CountRenderer;
+///
+/// impl PaletteRenderer for CountRenderer {
+///     fn render(&self, area: Rect, buf: &mut Buffer, view: &PaletteView) {
+///         let line = Line::from(format!("{} rows", view.rows().len()));
+///         Paragraph::new(line).render(area, buf);
+///     }
+/// }
+///
+/// let actions = vec![ActionSpec::new("document.open", "Open document")];
+/// let mut palette = PaletteState::new();
+/// palette.open(&actions);
+///
+/// let area = Rect::new(0, 0, 12, 1);
+/// let mut buffer = Buffer::empty(area);
+/// CountRenderer.render(area, &mut buffer, &palette.view(&actions));
+///
+/// assert_eq!(buffer[(0, 0)].symbol(), "1");
+/// ```
 pub trait PaletteRenderer {
     /// Draws `view` into `buf` within `area`.
     fn render(&self, area: Rect, buf: &mut Buffer, view: &PaletteView);

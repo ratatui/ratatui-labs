@@ -6,6 +6,8 @@
 /// `document.open` or `theme.switch`. They should not encode presentation
 /// details such as row position, colors, or keybindings.
 ///
+/// # Examples
+///
 /// ```
 /// use ratatui_action::id::ActionId;
 ///
@@ -45,6 +47,8 @@ impl From<String> for ActionId {
 /// Input identifiers become keys in [`ActionArgs`](crate::invocation::ActionArgs).
 /// Keep them stable for a given action so dispatch code can read resolved
 /// arguments without depending on the UI that collected them.
+///
+/// # Examples
 ///
 /// ```
 /// use ratatui_action::id::InputId;

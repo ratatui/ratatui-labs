@@ -1,4 +1,17 @@
 //! Command palette state machine.
+//!
+//! Start here when wiring command palette behavior into an application:
+//!
+//! - [`PaletteState::new`] creates an empty state machine.
+//! - [`PaletteState::open`], [`PaletteState::close`], [`PaletteState::cancel`], and
+//!   [`PaletteState::cancel_events`] manage the interaction lifecycle.
+//! - [`PaletteState::set_query`], [`PaletteState::push_query_char`], and
+//!   [`PaletteState::pop_query_char`] update filtering or active text input.
+//! - [`PaletteState::move_selection`] changes the selected action or input choice.
+//! - [`PaletteState::accept`] emits invocations or enters input collection.
+//! - [`PaletteState::view`] and [`PaletteState::view_with_shortcuts`] produce [`PaletteView`]
+//!   snapshots for renderers.
+//! - [`PaletteState::preview_event`] returns the current preview invocation without mutating state.
 
 use ratatui_action::id::ActionId;
 use ratatui_action::input::ActionInput;
@@ -12,9 +25,23 @@ use crate::{matching, selection};
 
 /// Stateful command palette model.
 ///
-/// `PaletteState` owns query text, row selection, input-collection mode, and
+/// [`PaletteState`] owns query text, row selection, input-collection mode, and
 /// partially resolved arguments. It borrows the current action list for each
 /// operation so applications can build action lists dynamically.
+///
+/// The methods fall into these caller tasks:
+///
+/// - **Lifecycle:** [`new`](Self::new), [`open`](Self::open), [`close`](Self::close),
+///   [`cancel`](Self::cancel), and [`cancel_events`](Self::cancel_events).
+/// - **Inspection:** [`query`](Self::query), [`selected`](Self::selected), and
+///   [`mode`](Self::mode).
+/// - **Editing:** [`set_query`](Self::set_query), [`push_query_char`](Self::push_query_char), and
+///   [`pop_query_char`](Self::pop_query_char).
+/// - **Selection and dispatch:** [`move_selection`](Self::move_selection),
+///   [`accept`](Self::accept), and [`preview_event`](Self::preview_event).
+/// - **Rendering:** [`view`](Self::view) and [`view_with_shortcuts`](Self::view_with_shortcuts).
+///
+/// # Examples
 ///
 /// ```
 /// use ratatui_action::spec::ActionSpec;
@@ -78,6 +105,8 @@ impl PaletteState {
     /// [`PaletteState::cancel`] when the interaction should also clear the
     /// query and selection.
     ///
+    /// # Examples
+    ///
     /// ```
     /// use ratatui_action::spec::ActionSpec;
     /// use ratatui_command_palette::event::PaletteEvent;
@@ -101,6 +130,22 @@ impl PaletteState {
     /// Closing clears transient input collection state but does not clear the
     /// query. Applications that treat close as an abandoned interaction should
     /// use [`PaletteState::cancel`] instead.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use ratatui_action::spec::ActionSpec;
+    /// use ratatui_command_palette::event::PaletteEvent;
+    /// use ratatui_command_palette::state::PaletteState;
+    ///
+    /// let actions = vec![ActionSpec::new("document.open", "Open document")];
+    /// let mut palette = PaletteState::new();
+    /// palette.open(&actions);
+    /// palette.set_query("open", &actions);
+    ///
+    /// assert_eq!(palette.close(), PaletteEvent::Closed);
+    /// assert_eq!(palette.query(), "open");
+    /// ```
     pub fn close(&mut self) -> PaletteEvent {
         self.mode = PaletteMode::Searching;
         self.args = ActionArgs::new();
@@ -108,6 +153,8 @@ impl PaletteState {
     }
 
     /// Cancels the current interaction and clears transient input state.
+    ///
+    /// # Examples
     ///
     /// ```
     /// use ratatui_action::spec::ActionSpec;
@@ -133,6 +180,8 @@ impl PaletteState {
     /// If cancellation abandons an active preview, the returned events include
     /// `PaletteEvent::PreviewChanged(None)` before [`PaletteEvent::Cancelled`]
     /// so the application can roll back transient preview state.
+    ///
+    /// # Examples
     ///
     /// ```
     /// use ratatui_action::id::InputId;
@@ -179,6 +228,8 @@ impl PaletteState {
     /// Setting the query leaves input collection and returns to
     /// [`PaletteMode::Searching`].
     ///
+    /// # Examples
+    ///
     /// ```
     /// use ratatui_action::spec::ActionSpec;
     /// use ratatui_command_palette::state::PaletteState;
@@ -205,6 +256,24 @@ impl PaletteState {
     /// This is the low-level edit primitive used by interactive input loops.
     /// Applications may call [`PaletteState::set_query`] instead when they
     /// already have the full query string.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use ratatui_action::spec::ActionSpec;
+    /// use ratatui_command_palette::state::PaletteState;
+    ///
+    /// let actions = vec![ActionSpec::new("theme.switch", "Switch theme")];
+    /// let mut palette = PaletteState::new();
+    /// palette.open(&actions);
+    ///
+    /// for character in "theme".chars() {
+    ///     palette.push_query_char(character, &actions);
+    /// }
+    ///
+    /// assert_eq!(palette.query(), "theme");
+    /// assert_eq!(palette.view(&actions).rows()[0].title(), "Switch theme");
+    /// ```
     pub fn push_query_char(&mut self, character: char, actions: &[ActionSpec]) {
         if matches!(self.current_input(actions), Some(ActionInput::Text { .. })) {
             self.query.push(character);
@@ -221,6 +290,21 @@ impl PaletteState {
     ///
     /// Returns the removed character, or `None` when the query was already
     /// empty.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use ratatui_action::spec::ActionSpec;
+    /// use ratatui_command_palette::state::PaletteState;
+    ///
+    /// let actions = vec![ActionSpec::new("theme.switch", "Switch theme")];
+    /// let mut palette = PaletteState::new();
+    /// palette.open(&actions);
+    /// palette.set_query("theme", &actions);
+    ///
+    /// assert_eq!(palette.pop_query_char(&actions), Some('e'));
+    /// assert_eq!(palette.query(), "them");
+    /// ```
     pub fn pop_query_char(&mut self, actions: &[ActionSpec]) -> Option<char> {
         if matches!(self.current_input(actions), Some(ActionInput::Text { .. })) {
             return self.query.pop();
@@ -238,6 +322,8 @@ impl PaletteState {
     /// Relative movement wraps at the result boundaries. In choice-input mode,
     /// movement can emit [`PaletteEvent::PreviewChanged`] so the application can
     /// preview the selected value without committing it.
+    ///
+    /// # Examples
     ///
     /// ```
     /// use ratatui_action::id::InputId;
@@ -288,6 +374,8 @@ impl PaletteState {
     /// Shortcuts are not stored on [`ActionSpec`]. Applications can pass the
     /// currently active keymap labels here while keeping action metadata
     /// semantic and context independent.
+    ///
+    /// # Examples
     ///
     /// ```
     /// use ratatui_action::spec::ActionSpec;
@@ -347,6 +435,8 @@ impl PaletteState {
     /// preview event for the selected choice. Disabled, hidden, unsupported, or
     /// unselected actions return `None`.
     ///
+    /// # Examples
+    ///
     /// ```
     /// use ratatui_action::spec::ActionSpec;
     /// use ratatui_command_palette::event::PaletteEvent;
@@ -401,6 +491,38 @@ impl PaletteState {
     ///
     /// This method does not mutate palette state. It returns `None` outside
     /// choice-input mode or when no choice is selected.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use ratatui_action::id::InputId;
+    /// use ratatui_action::input::{ActionChoice, ActionInput};
+    /// use ratatui_action::spec::ActionSpec;
+    /// use ratatui_command_palette::event::PaletteEvent;
+    /// use ratatui_command_palette::state::PaletteState;
+    ///
+    /// let actions =
+    ///     vec![
+    ///         ActionSpec::new("theme.switch", "Switch theme").with_input(ActionInput::Choice {
+    ///             id: InputId::new("theme"),
+    ///             label: "Theme".into(),
+    ///             choices: vec![ActionChoice::new("catppuccin", "Catppuccin")],
+    ///         }),
+    ///     ];
+    ///
+    /// let mut palette = PaletteState::new();
+    /// palette.open(&actions);
+    /// palette.accept(&actions);
+    ///
+    /// let Some(PaletteEvent::PreviewChanged(Some(preview))) = palette.preview_event(&actions) else {
+    ///     panic!("expected preview event");
+    /// };
+    ///
+    /// assert_eq!(
+    ///     preview.args().get(&InputId::new("theme")),
+    ///     Some("catppuccin")
+    /// );
+    /// ```
     pub fn preview_event(&self, actions: &[ActionSpec]) -> Option<PaletteEvent> {
         let (action, input, value) = self.selected_input_value(actions)?;
         let mut args = self.args.clone();

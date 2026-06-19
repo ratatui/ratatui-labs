@@ -11,7 +11,9 @@ use crate::view::PaletteView;
 ///
 /// The split renderer renders search results on the left and selected-row
 /// details on the right. It uses only [`PaletteView`] data, so applications can
-/// replace this preview with richer domain-specific rendering later.
+/// replace this preview with richer domain-specific rendering later. See the
+/// [`render`](super) module for the renderer contract shared by all built-in
+/// renderers.
 #[derive(Clone, Debug)]
 pub struct SplitPreviewRenderer {
     title: String,
@@ -35,6 +37,8 @@ impl SplitPreviewRenderer {
 
     /// Sets the palette pane title.
     ///
+    /// # Examples
+    ///
     /// ```
     /// use ratatui_command_palette::render::SplitPreviewRenderer;
     ///
@@ -48,6 +52,8 @@ impl SplitPreviewRenderer {
     }
 
     /// Sets the preview pane title.
+    ///
+    /// # Examples
     ///
     /// ```
     /// use ratatui_command_palette::render::SplitPreviewRenderer;

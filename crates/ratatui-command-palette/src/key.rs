@@ -3,26 +3,47 @@
 //! This module keeps terminal-backend details at the edge of the API. Apps can
 //! convert crossterm key events with [`PaletteKey::from_crossterm`] and then
 //! handle palette concepts such as movement, acceptance, cancellation, and text
-//! edits.
+//! edits by calling methods on [`PaletteState`](crate::state::PaletteState).
+//!
+//! Use [`PaletteKey`] as the small command enum in your event loop. With the
+//! `crossterm` feature enabled, use [`PaletteKey::from_crossterm`] as the adapter from backend
+//! events to palette commands.
 
 use crate::event::MoveSelection;
 
 /// A normalized key command for palette interaction.
 ///
-/// `PaletteKey` intentionally does not decide whether cancellation exits the
+/// [`PaletteKey`] intentionally does not decide whether cancellation exits the
 /// application, closes a palette, or only rolls back transient preview state.
 /// Applications keep that policy at their boundary.
+///
+/// Variant map:
+///
+/// - [`Accept`](Self::Accept) calls [`PaletteState::accept`](crate::state::PaletteState::accept).
+/// - [`Cancel`](Self::Cancel) calls [`PaletteState::cancel`](crate::state::PaletteState::cancel) or
+///   [`PaletteState::cancel_events`](crate::state::PaletteState::cancel_events).
+/// - [`Move`](Self::Move) calls
+///   [`PaletteState::move_selection`](crate::state::PaletteState::move_selection).
+/// - [`Insert`](Self::Insert) and [`Backspace`](Self::Backspace) edit the query or active text
+///   input.
+/// - [`Ignore`](Self::Ignore) leaves the palette unchanged.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PaletteKey {
-    /// Accept the selected row or collected input.
+    /// Accept the selected row or collected input with
+    /// [`PaletteState::accept`](crate::state::PaletteState::accept).
     Accept,
-    /// Cancel the current palette interaction.
+    /// Cancel the current palette interaction with
+    /// [`PaletteState::cancel`](crate::state::PaletteState::cancel) or
+    /// [`PaletteState::cancel_events`](crate::state::PaletteState::cancel_events).
     Cancel,
-    /// Move selection within the current row set.
+    /// Move selection within the current row set with
+    /// [`PaletteState::move_selection`](crate::state::PaletteState::move_selection).
     Move(MoveSelection),
-    /// Insert a character into the search query or active text input.
+    /// Insert a character into the search query or active text input with
+    /// [`PaletteState::push_query_char`](crate::state::PaletteState::push_query_char).
     Insert(char),
-    /// Remove the previous query or text-input character.
+    /// Remove the previous query or text-input character with
+    /// [`PaletteState::pop_query_char`](crate::state::PaletteState::pop_query_char).
     Backspace,
     /// Ignore this key event.
     Ignore,

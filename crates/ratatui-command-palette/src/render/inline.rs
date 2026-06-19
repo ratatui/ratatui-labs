@@ -11,7 +11,8 @@ use crate::view::PaletteView;
 ///
 /// This renderer draws a compact bordered dropdown inside the supplied area and
 /// does not clear content outside that area. It is intended for embedding below
-/// another input or toolbar.
+/// another input or toolbar. See the [`render`](super) module for the renderer
+/// contract shared by all built-in renderers.
 #[derive(Clone, Debug)]
 pub struct InlineDropdownRenderer {
     title: String,
@@ -24,7 +25,7 @@ impl Default for InlineDropdownRenderer {
 }
 
 impl InlineDropdownRenderer {
-    /// Creates an inline dropdown renderer with the default title.
+    /// Creates an [`InlineDropdownRenderer`] with the default title.
     pub fn new() -> Self {
         Self {
             title: "Commands".into(),
@@ -32,6 +33,8 @@ impl InlineDropdownRenderer {
     }
 
     /// Sets the dropdown border title.
+    ///
+    /// # Examples
     ///
     /// ```
     /// use ratatui_command_palette::render::InlineDropdownRenderer;

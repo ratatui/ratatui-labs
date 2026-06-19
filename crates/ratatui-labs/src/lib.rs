@@ -1,4 +1,5 @@
 #![doc = include_str!("../README.md")]
+#![warn(rustdoc::broken_intra_doc_links)]
 
 /// Semantic action model.
 pub use ratatui_action as action;

@@ -1,4 +1,10 @@
 //! Input declarations and choice values for action invocation.
+//!
+//! Use this module when an [`ActionSpec`](crate::spec::ActionSpec) needs values before it can be
+//! invoked:
+//!
+//! - [`ActionInput`] declares the value a UI surface must collect.
+//! - [`ActionChoice`] declares one selectable value for [`ActionInput::Choice`].
 
 use crate::id::InputId;
 
@@ -7,6 +13,17 @@ use crate::id::InputId;
 /// Inputs describe values the application needs, not how a particular UI should
 /// collect them. A command palette might render choices as rows while another
 /// surface might render the same input as a menu.
+///
+/// Variant meanings:
+///
+/// - [`Text`](Self::Text) collects free-form text.
+/// - [`Choice`](Self::Choice) selects one [`ActionChoice`].
+/// - [`Bool`](Self::Bool) selects `true` or `false`.
+///
+/// Use [`id`](Self::id), [`label`](Self::label), [`choices`](Self::choices), and
+/// [`as_choice`](Self::as_choice) to inspect an input without matching every variant.
+///
+/// # Examples
 ///
 /// ```
 /// use ratatui_action::id::InputId;
@@ -96,6 +113,12 @@ impl ActionInput {
 /// The `value` is the stable value inserted into
 /// [`ActionArgs`](crate::invocation::ActionArgs). The `label` and optional
 /// description are presentation text.
+///
+/// Use [`new`](Self::new) to create a choice, [`with_description`](Self::with_description) to add
+/// visible detail, and [`value`](Self::value), [`label`](Self::label), and
+/// [`description`](Self::description) to inspect it.
+///
+/// # Examples
 ///
 /// ```
 /// use ratatui_action::input::ActionChoice;

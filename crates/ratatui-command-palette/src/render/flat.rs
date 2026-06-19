@@ -12,7 +12,10 @@ use crate::view::PaletteView;
 ///
 /// This renderer clears its area but does not draw a surrounding border. It is
 /// useful for command surfaces that should feel like a flat sheet over existing
-/// content rather than a dialog.
+/// content rather than a dialog. Use it through the
+/// [`PaletteRenderer`](super::PaletteRenderer) trait with a
+/// [`PaletteView`](crate::view::PaletteView) produced by
+/// [`PaletteState::view`](crate::state::PaletteState::view).
 #[derive(Clone, Debug)]
 pub struct FlatOverlayRenderer {
     title: String,
@@ -25,7 +28,7 @@ impl Default for FlatOverlayRenderer {
 }
 
 impl FlatOverlayRenderer {
-    /// Creates a flat overlay renderer with the default title.
+    /// Creates a [`FlatOverlayRenderer`] with the default title.
     pub fn new() -> Self {
         Self {
             title: "Actions".into(),
@@ -33,6 +36,8 @@ impl FlatOverlayRenderer {
     }
 
     /// Sets the heading rendered above the query row.
+    ///
+    /// # Examples
     ///
     /// ```
     /// use ratatui_command_palette::render::FlatOverlayRenderer;

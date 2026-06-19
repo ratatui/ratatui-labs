@@ -11,7 +11,8 @@ use crate::view::PaletteView;
 ///
 /// The modal renderer clears its area, draws a rounded border, then renders the
 /// prompt, rows, and footer. It is useful when the palette should interrupt the
-/// current surface.
+/// current surface. See the [`render`](super) module for the renderer contract
+/// shared by all built-in renderers.
 #[derive(Clone, Debug)]
 pub struct ModalRenderer {
     title: String,
@@ -24,7 +25,7 @@ impl Default for ModalRenderer {
 }
 
 impl ModalRenderer {
-    /// Creates a modal renderer with the default title.
+    /// Creates a [`ModalRenderer`] with the default title.
     pub fn new() -> Self {
         Self {
             title: "Command Palette".into(),
@@ -32,6 +33,8 @@ impl ModalRenderer {
     }
 
     /// Sets the modal title.
+    ///
+    /// # Examples
     ///
     /// ```
     /// use ratatui_command_palette::render::ModalRenderer;

@@ -1,13 +1,30 @@
 //! Action metadata and availability.
+//!
+//! Use this module to describe what an application can do:
+//!
+//! - [`ActionSpec`] stores stable identity, user-facing metadata, inputs, and availability.
+//! - [`Availability`] controls whether an action is shown, hidden, or disabled.
 
 use crate::id::ActionId;
 use crate::input::ActionInput;
 
 /// Metadata describing a semantic application action.
 ///
-/// `ActionSpec` is presentation-neutral. It names what the application can do
+/// [`ActionSpec`] is presentation-neutral. It names what the application can do
 /// and supplies metadata that surfaces such as command palettes, menus, help
 /// screens, or keybinding inspectors can reuse.
+///
+/// Method groups:
+///
+/// - **Construction:** [`new`](Self::new), [`with_description`](Self::with_description),
+///   [`with_category`](Self::with_category), [`with_keywords`](Self::with_keywords),
+///   [`with_input`](Self::with_input), and [`with_availability`](Self::with_availability).
+/// - **Metadata:** [`id`](Self::id), [`title`](Self::title), [`description`](Self::description),
+///   [`category`](Self::category), [`keywords`](Self::keywords), and [`inputs`](Self::inputs).
+/// - **Availability:** [`availability`](Self::availability), [`is_hidden`](Self::is_hidden), and
+///   [`is_enabled`](Self::is_enabled).
+///
+/// # Examples
 ///
 /// ```
 /// use ratatui_action::spec::{ActionSpec, Availability};
@@ -135,6 +152,14 @@ impl ActionSpec {
 /// Availability is a UI-facing contract. A surface may show disabled actions
 /// with a reason, omit hidden actions from normal results, and invoke only
 /// enabled actions.
+///
+/// Variant meanings:
+///
+/// - [`Enabled`](Self::Enabled) can be shown and invoked.
+/// - [`Disabled`](Self::Disabled) can be shown with a reason but not invoked.
+/// - [`Hidden`](Self::Hidden) should be omitted from ordinary UI results.
+///
+/// # Examples
 ///
 /// ```
 /// use ratatui_action::spec::{ActionSpec, Availability};

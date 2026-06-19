@@ -6,6 +6,11 @@ This crate is a Ratatui namespace reservation that can host small experiments
 before they are ready to move into focused crates or the main Ratatui
 repository. APIs in this crate are experimental and may change or disappear.
 
+`ratatui-labs` is not intended to become a broad implementation crate. When an
+experiment grows a clear concept boundary, prefer a focused crate with its own
+crate-level documentation, examples, and validation. This crate can then provide
+a short compatibility namespace for the experiment while the API is evaluated.
+
 ## Command Palette Experiment
 
 The command palette experiment now lives in two concept-owned crates:
@@ -15,9 +20,9 @@ The command palette experiment now lives in two concept-owned crates:
 - `ratatui-command-palette` for palette state, filtering, selection, and event
   emission.
 
-The palette does not own application state or execute application callbacks.
-It consumes action metadata and emits invocation or lifecycle events that the
-application handles.
+The palette does not own application state or execute application callbacks. It
+consumes action metadata and emits invocation, preview, and lifecycle events
+that the application handles.
 
 ```rust
 use ratatui_labs::{

@@ -20,7 +20,15 @@ lint-md:
 
 validate: fmt-check check clippy test lint-md
 
-betamax tape="tapes/jk-log-ui.tape":
-    test -f "{{tape}}" || { echo "missing Betamax tape: {{tape}}" >&2; exit 1; }
-    mkdir -p target/betamax
-    cargo run --manifest-path ../../betamax/Cargo.toml -- run "{{tape}}"
+betamax tape="":
+    mkdir -p target/betamax/renderers
+    cargo build --manifest-path ../../betamax/Cargo.toml
+    tapes="{{tape}}"; \
+    if [ -n "$tapes" ]; then \
+        test -f "$tapes" || { echo "missing Betamax tape: $tapes" >&2; exit 1; }; \
+        ../../betamax/target/debug/betamax run "$tapes"; \
+    else \
+        jobs="${BETAMAX_JOBS:-4}"; \
+        find tapes -name '*.tape' | sort | xargs -P "$jobs" -I{} \
+            sh -c '../../betamax/target/debug/betamax run "$1"' sh {}; \
+    fi

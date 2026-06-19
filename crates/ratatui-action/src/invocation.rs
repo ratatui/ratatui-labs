@@ -1,4 +1,10 @@
 //! Resolved arguments and invocation requests.
+//!
+//! Use this module at the dispatch boundary:
+//!
+//! - [`ActionArgs`] stores resolved input values keyed by [`InputId`].
+//! - [`ActionInvocation`] names the action, carries resolved arguments, and records source.
+//! - [`InvocationSource`] identifies the UI or integration that requested the action.
 
 use std::collections::BTreeMap;
 
@@ -8,6 +14,13 @@ use crate::id::{ActionId, InputId};
 ///
 /// Arguments are keyed by [`InputId`] so dispatch code can read values without
 /// knowing which UI surface collected them.
+///
+/// Method groups:
+///
+/// - **Construction and mutation:** [`new`](Self::new) and [`insert`](Self::insert).
+/// - **Inspection:** [`get`](Self::get), [`iter`](Self::iter), and [`is_empty`](Self::is_empty).
+///
+/// # Examples
 ///
 /// ```
 /// use ratatui_action::id::InputId;
@@ -58,6 +71,12 @@ impl ActionArgs {
 /// Invocation is the handoff point between a UI surface and application-owned
 /// dispatch. The action crate does not execute callbacks or mutate application
 /// state.
+///
+/// Use [`new`](Self::new) for actions without arguments and [`with_args`](Self::with_args) when a
+/// UI surface has collected inputs. Dispatch code usually reads [`id`](Self::id),
+/// [`args`](Self::args), and [`source`](Self::source).
+///
+/// # Examples
 ///
 /// ```
 /// use ratatui_action::id::InputId;
@@ -118,6 +137,9 @@ impl ActionInvocation {
 /// The source lets dispatch code distinguish user intent from a palette,
 /// keybinding, menu, mouse action, or automation path when that distinction
 /// affects behavior or telemetry.
+///
+/// Match this enum when dispatch needs different policy for palette, keybinding,
+/// menu, mouse, or automation callers.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum InvocationSource {
     /// Invocation came from a command palette.

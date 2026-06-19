@@ -1,17 +1,56 @@
 #![warn(missing_docs)]
+#![warn(rustdoc::broken_intra_doc_links)]
 
-//! Semantic actions and invocation requests for Ratatui applications.
+//! Semantic action descriptions for Ratatui applications.
 //!
-//! This crate describes application capabilities without binding them to a
-//! specific UI surface. A command palette, keybinding table, menu, help screen,
-//! or automation layer can all read the same [`spec::ActionSpec`] values and
-//! return [`invocation::ActionInvocation`] requests for the application to
-//! dispatch.
+//! `ratatui-action` is the action-model half of the command palette experiment
+//! in `ratatui-labs`. It gives an application a way to name the capabilities it
+//! already has, attach user-facing metadata, describe simple required inputs,
+//! and receive resolved invocation requests from UI surfaces.
+//!
+//! The crate is intentionally surface-agnostic. A command palette, keybinding
+//! table, menu, help screen, toolbar, context menu, or automation layer can all
+//! read the same [`ActionSpec`](spec::ActionSpec) values and return
+//! [`ActionInvocation`](invocation::ActionInvocation) requests for the
+//! application to dispatch.
 //!
 //! The action model deliberately does not store callbacks. Applications keep
 //! ownership of state mutation, side effects, permissions, and error handling.
+//! This keeps the API usable by applications with very different state models
+//! and avoids turning the experiment into an application framework.
 //!
-//! # Core Flow
+//! The API is experimental. Callers can rely on the behavior documented here
+//! while experimenting, but names, module boundaries, and storage choices may
+//! change before any release with compatibility commitments.
+//!
+//! # Crate Model
+//!
+//! The primary types are:
+//!
+//! - [`ActionId`](id::ActionId) and [`InputId`](id::InputId) for stable identifiers.
+//! - [`ActionSpec`](spec::ActionSpec) and [`Availability`](spec::Availability) for describing
+//!   actions and whether they can be invoked.
+//! - [`ActionInput`](input::ActionInput) and [`ActionChoice`](input::ActionChoice) for declaring
+//!   values a UI surface must collect.
+//! - [`ActionArgs`](invocation::ActionArgs), [`ActionInvocation`](invocation::ActionInvocation),
+//!   and [`InvocationSource`](invocation::InvocationSource) for returning resolved work to the
+//!   application.
+//!
+//! A UI surface should treat action specs as input data and invocations as
+//! output data. The application remains the only place that knows how to perform
+//! an action.
+//!
+//! Module map:
+//!
+//! - [`id`] defines stable [`ActionId`](id::ActionId) and [`InputId`](id::InputId) keys.
+//! - [`spec`] defines [`ActionSpec`](spec::ActionSpec) and [`Availability`](spec::Availability).
+//! - [`input`] defines [`ActionInput`](input::ActionInput) and
+//!   [`ActionChoice`](input::ActionChoice).
+//! - [`invocation`] defines [`ActionArgs`](invocation::ActionArgs),
+//!   [`ActionInvocation`](invocation::ActionInvocation), and
+//!   [`InvocationSource`](invocation::InvocationSource).
+//!
+//! # Basic Flow
 //!
 //! A typical integration builds a list of [`spec::ActionSpec`] values, passes
 //! them to a UI surface, and dispatches the returned
@@ -60,6 +99,14 @@
 //! );
 //! ```
 //!
+//! # Compatibility Boundary
+//!
+//! Public structs use constructors, accessors, and builder-style modifiers
+//! instead of public fields. That keeps the experimental API flexible enough to
+//! add validation, change storage, or introduce borrowed view data before
+//! publication. Prefer matching on stable identifiers at the application
+//! dispatch boundary rather than depending on current struct layout.
+//!
 //! # Modules
 //!
 //! - [`id`] owns stable action and input identifiers.
@@ -69,8 +116,10 @@
 //!
 //! # Related Crates
 //!
-//! [`ratatui-command-palette`](https://docs.rs/ratatui-command-palette) consumes
-//! these action specs and provides command palette state and rendering.
+//! `ratatui-command-palette` consumes these action specs and provides command
+//! palette state, view data, and rendering. The `ratatui-labs` crate re-exports
+//! this crate under `ratatui_labs::action` as a convenience namespace while the
+//! experiment is being evaluated.
 
 pub mod id;
 pub mod input;
