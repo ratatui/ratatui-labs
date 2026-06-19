@@ -1,0 +1,20 @@
+[package]
+name = "ratatui-action"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "Experimental semantic action model for Ratatui applications."
+documentation = "https://docs.rs/ratatui-action"
+readme = "README.md"
+include = ["Cargo.toml", "README.md", "src/**/*.rs"]
+
+[package.metadata.ratatui-reservation]
+area = "Experimental APIs"
+future_scope = "semantic action identifiers, metadata, inputs, and invocation requests"
+
+[lints]
+workspace = true

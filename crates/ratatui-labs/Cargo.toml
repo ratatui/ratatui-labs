@@ -10,17 +10,15 @@ categories.workspace = true
 description = "Reserved for Ratatui labs-style experiments and prototype Ratatui work."
 documentation = "https://docs.rs/ratatui-labs"
 readme = "README.md"
-include = ["Cargo.toml", "README.md", "examples/**/*.rs", "src/**/*.rs"]
+include = ["Cargo.toml", "README.md", "src/**/*.rs"]
 
 [package.metadata.ratatui-reservation]
 area = "Experimental APIs"
 future_scope = "labs-style experiments and prototype Ratatui work"
 
 [dependencies]
-ratatui = "0.30.2"
-
-[dev-dependencies]
-crossterm = "0.29.0"
+ratatui-action = { path = "../ratatui-action", version = "0.0.0" }
+ratatui-command-palette = { path = "../ratatui-command-palette", version = "0.0.0" }
 
 [lints]
 workspace = true

@@ -1,13 +1,6 @@
 #![doc = include_str!("../README.md")]
 
-pub mod action;
-pub mod command_palette;
-
-pub use action::{
-    ActionArgs, ActionChoice, ActionId, ActionInput, ActionInvocation, ActionSpec, Availability,
-    InputId, InvocationSource,
-};
-pub use command_palette::render::{ModalRenderer, PaletteRenderer};
-pub use command_palette::{
-    MoveSelection, PaletteEvent, PaletteMode, PaletteRow, PaletteState, PaletteView,
-};
+/// Semantic action model.
+pub use ratatui_action as action;
+/// Command palette state, view data, and rendering.
+pub use ratatui_command_palette as command_palette;

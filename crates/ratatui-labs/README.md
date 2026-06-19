@@ -8,21 +8,38 @@ repository. APIs in this crate are experimental and may change or disappear.
 
 ## Command Palette Experiment
 
-The command palette experiment starts with two concept-owned modules:
+The command palette experiment now lives in two concept-owned crates:
 
-- [`action`] for semantic action identity, metadata, availability, inputs, and
+- `ratatui-action` for semantic action identity, metadata, availability, inputs, and
   invocations.
-- [`command_palette`] for palette state, filtering, selection, and event
+- `ratatui-command-palette` for palette state, filtering, selection, and event
   emission.
 
 The palette does not own application state or execute application callbacks.
 It consumes action metadata and emits invocation or lifecycle events that the
 application handles.
 
+```rust
+use ratatui_labs::{
+    action::spec::ActionSpec,
+    command_palette::{event::PaletteEvent, state::PaletteState},
+};
+
+let actions = vec![ActionSpec::new("document.open", "Open document")];
+let mut palette = PaletteState::new();
+palette.open(&actions);
+
+if let Some(PaletteEvent::Invoke(invocation)) = palette.accept(&actions) {
+    assert_eq!(invocation.id().as_str(), "document.open");
+}
+```
+
 Run the first interactive example with:
 
 ```sh
-cargo run --example command-palette
+cargo run -p ratatui-command-palette --example command-palette
+cargo run -p ratatui-command-palette --example command-palette -- --help
+cargo run -p ratatui-command-palette --example command-palette -- --renderer split
 ```
 
 Rendered validation for this example is captured by the repository Betamax tape:
@@ -46,7 +63,7 @@ Documentation for this reservation crate is published at:
 This reservation may overlap with:
 
 - `ratatui-unstable`, `ratatui-experimental`, and future unstable API policy.
-- possible future `ratatui-action` and `ratatui-command-palette` crates.
+- the experimental `ratatui-action` and `ratatui-command-palette` crates in this workspace.
 
 Any future implementation should coordinate with those crates or clearly explain
 the difference before publishing a non-reservation release.

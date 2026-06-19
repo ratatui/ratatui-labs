@@ -1,0 +1,32 @@
+[package]
+name = "ratatui-command-palette"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "Experimental command palette state and rendering for Ratatui applications."
+documentation = "https://docs.rs/ratatui-command-palette"
+readme = "README.md"
+include = ["Cargo.toml", "README.md", "examples/**/*.rs", "src/**/*.rs"]
+
+[package.metadata.ratatui-reservation]
+area = "Experimental APIs"
+future_scope = "command palette state, filtering, preview, invocation, and rendering"
+
+[dependencies]
+crossterm = { version = "0.29.0", optional = true }
+ratatui = "0.30.2"
+ratatui-action = { path = "../ratatui-action", version = "0.0.0" }
+
+[dev-dependencies]
+clap = { version = "4.5.47", features = ["derive"] }
+
+[features]
+default = ["crossterm"]
+crossterm = ["dep:crossterm"]
+
+[lints]
+workspace = true
