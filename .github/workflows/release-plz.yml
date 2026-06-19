@@ -1,0 +1,72 @@
+name: Release-plz
+
+permissions: {}
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  release-plz-release:
+    name: Release-plz release
+    environment: release
+    runs-on: ubuntu-latest
+    if: >-
+      ${{
+        github.repository_owner == 'ratatui' &&
+        (
+          github.event_name == 'workflow_dispatch' ||
+          startsWith(github.event.head_commit.message, 'chore: release') ||
+          contains(github.event.head_commit.message, '): release')
+        )
+      }}
+    permissions:
+      contents: write
+      pull-requests: read
+      id-token: write
+    steps:
+      - &checkout
+        name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - &install-rust
+        name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@3c5f7ea28cd621ae0bf5283f0e981fb97b8a7af9 # master
+        with:
+          toolchain: stable
+      - name: Run release-plz
+        uses: release-plz/action@e8792575c7f2366cf6ff3ccc33ead9ace5b691c7 # v0.5.130
+        with:
+          command: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release-plz-pr:
+    name: Release-plz PR
+    runs-on: ubuntu-latest
+    if: >-
+      ${{
+        github.repository_owner == 'ratatui' &&
+        github.event_name == 'push' &&
+        !startsWith(github.event.head_commit.message, 'chore: release') &&
+        !contains(github.event.head_commit.message, '): release')
+      }}
+    permissions:
+      contents: write
+      pull-requests: write
+    concurrency:
+      group: release-plz-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - *checkout
+      - *install-rust
+      - name: Run release-plz
+        uses: release-plz/action@e8792575c7f2366cf6ff3ccc33ead9ace5b691c7 # v0.5.130
+        with:
+          command: release-pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

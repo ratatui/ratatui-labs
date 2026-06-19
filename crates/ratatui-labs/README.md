@@ -56,7 +56,7 @@ just betamax
 The crate points at the main Ratatui project rather than a separate
 implementation repository:
 
-- <https://github.com/ratatui/ratatui>
+- <https://github.com/ratatui/ratatui-labs>
 - <https://docs.rs/ratatui/latest/ratatui/>
 
 Documentation for this reservation crate is published at:

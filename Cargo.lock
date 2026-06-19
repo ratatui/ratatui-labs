@@ -1060,11 +1060,11 @@ dependencies = [
 
 [[package]]
 name = "ratatui-action"
-version = "0.0.0"
+version = "0.1.0"
 
 [[package]]
 name = "ratatui-command-palette"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "clap",
  "crossterm",
@@ -1108,7 +1108,7 @@ dependencies = [
 
 [[package]]
 name = "ratatui-labs"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "ratatui-action",
  "ratatui-command-palette",
