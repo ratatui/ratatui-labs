@@ -18,8 +18,10 @@ area = "Experimental APIs"
 future_scope = "labs-style experiments and prototype Ratatui work"
 
 [dependencies]
+ratatui-core = "0.1.2"
 ratatui-action = { path = "../ratatui-action", version = "0.1.0" }
 ratatui-command-palette = { path = "../ratatui-command-palette", version = "0.1.0" }
+ratatui-layout = { path = "../ratatui-layout", version = "0.0.1-alpha.0" }
 
 [lints]
 workspace = true

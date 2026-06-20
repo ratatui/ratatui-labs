@@ -12,6 +12,8 @@ grow into real experiments when there is a concrete design to test.
   invocation requests.
 - `crates/ratatui-command-palette` - experimental command palette state, rendering, preview, and
   invocation behavior.
+- `crates/ratatui-layout` - experimental frame-local UI coordination primitives for visible
+  regions, focus targets, pointer targets, cursor requests, and scroll metadata.
 - `crates/ratatui-labs` - umbrella crate for labs-style experiments and prototype Ratatui work.
 
 ## Examples
@@ -20,6 +22,8 @@ grow into real experiments when there is a concrete design to test.
 cargo run -p ratatui-command-palette --example command-palette
 cargo run -p ratatui-command-palette --example command-palette -- --help
 cargo run -p ratatui-command-palette --example command-palette -- --renderer split
+cargo run -p ratatui-layout --example left_right_row
+cargo run -p ratatui-layout --example frame_snapshot
 ```
 
 ## Docs

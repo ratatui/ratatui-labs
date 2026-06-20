@@ -1,0 +1,43 @@
+[package]
+name = "ratatui-layout"
+version = "0.0.1-alpha.0"
+description = "Extremely experimental frame-local UI coordination primitives for Ratatui."
+documentation = "https://docs.rs/ratatui-layout"
+readme = "README.md"
+# Published once at 0.0.1-alpha.0 to reserve the crate name while this experiment incubates.
+publish = false
+repository.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+include = ["Cargo.toml", "README.md", "examples/**/*.rs", "src/**/*.rs", "use-cases/**/*.md"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[features]
+default = []
+
+## enables std
+std = ["ratatui-core/std", "serde?/std"]
+
+## enables serialization and deserialization for region set types.
+serde = ["dep:serde", "ratatui-core/serde"]
+
+[dependencies]
+document-features = { version = "0.2.11", optional = true }
+ratatui-core = "0.1.2"
+serde = { version = "1", default-features = false, features = ["derive"], optional = true }
+
+[dev-dependencies]
+color-eyre = "0.6"
+crossterm = "0.29.0"
+pretty_assertions = "1"
+ratatui = "0.30.2"
+
+[lints]
+workspace = true
