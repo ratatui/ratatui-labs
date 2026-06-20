@@ -53,6 +53,29 @@ Rendered validation for this example is captured by the repository Betamax tape:
 just betamax
 ```
 
+## Layout Experiment
+
+The frame-local layout coordination experiment lives in `ratatui-layout`.
+It records visible regions, focus targets, pointer targets, cursor requests,
+viewport metadata, and scroll metrics produced by a render pass so applications
+can route later input events without adopting a retained widget tree.
+
+Start with `ratatui_layout::docs` when exploring the coordination model, or use
+the umbrella re-export:
+
+```rust
+use ratatui_labs::layout::{
+    frame::FrameSnapshot,
+    pointer::{PointerTarget, PointerTargets},
+};
+use ratatui_core::layout::Rect;
+
+let frame = FrameSnapshot::new(Rect::new(0, 0, 20, 1))
+    .mouse(PointerTargets::new().target(PointerTarget::new("save", Rect::new(0, 0, 6, 1))));
+
+assert_eq!(frame.route_position((2, 0)).unwrap().id, "save");
+```
+
 The crate points at the main Ratatui project rather than a separate
 implementation repository:
 
@@ -69,6 +92,7 @@ This reservation may overlap with:
 
 - `ratatui-unstable`, `ratatui-experimental`, and future unstable API policy.
 - the experimental `ratatui-action` and `ratatui-command-palette` crates in this workspace.
+- the experimental `ratatui-layout` crate in this workspace.
 
 Any future implementation should coordinate with those crates or clearly explain
 the difference before publishing a non-reservation release.

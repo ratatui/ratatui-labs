@@ -6,3 +6,4 @@ extend-exclude = [
 
 [default.extend-words]
 ratatui = "ratatui"
+WRK = "WRK"
