@@ -6,7 +6,7 @@ Require cargo
 
 Set Shell "bash"
 Set Width 1200
-Set Height 620
+Set Height 650
 Set WindowBar Colorful
 Set BorderRadius 8
 Set TypingSpeed 35ms
