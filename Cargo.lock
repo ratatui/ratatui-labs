@@ -1231,7 +1231,7 @@ dependencies = [
 
 [[package]]
 name = "ratatui-labs"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ratatui-action",
  "ratatui-command-palette",
