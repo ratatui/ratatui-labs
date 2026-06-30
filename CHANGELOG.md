@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1](https://github.com/ratatui/ratatui-labs/compare/ratatui-labs-v0.1.0...ratatui-labs-v0.1.1) - 2026-06-30
+
+### Other
+
+- Add experimental ratatui-derive crate ([#8](https://github.com/ratatui/ratatui-labs/pull/8))
+- Import ratatui-layout crate ([#4](https://github.com/ratatui/ratatui-labs/pull/4))
+
+## [0.1.0-beta.0](https://github.com/ratatui/ratatui-labs/compare/ratatui-derive-v0.0.0...ratatui-derive-v0.1.0-beta.0) - 2026-06-30
+
+### Other
+
+- Add experimental ratatui-derive crate ([#8](https://github.com/ratatui/ratatui-labs/pull/8))
+
 ## [0.1.0](https://github.com/ratatui/ratatui-labs/compare/ratatui-action-v0.0.0...ratatui-action-v0.1.0) - 2026-06-19
 
 ### Other
