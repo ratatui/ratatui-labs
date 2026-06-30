@@ -1,0 +1,5 @@
+error: expected a Flex variant: Start, End, Center, SpaceBetween, SpaceAround, SpaceEvenly, or Legacy
+ --> tests/ui/fail/bad_flex.rs:5:29
+  |
+5 | #[layout(horizontal, flex = Stretch)]
+  |                             ^^^^^^^

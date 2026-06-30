@@ -1,0 +1,5 @@
+error: layout direction can only be specified once
+ --> tests/ui/fail/duplicate_directions.rs:5:22
+  |
+5 | #[layout(horizontal, vertical)]
+  |                      ^^^^^^^^

@@ -1,0 +1,5 @@
+error: missing layout direction: add #[layout(horizontal)] or #[layout(vertical)]
+ --> tests/ui/fail/missing_direction.rs:5:8
+  |
+5 | struct Areas {
+  |        ^^^^^
