@@ -86,6 +86,35 @@ Documentation for this reservation crate is published at:
 
 - <https://docs.rs/ratatui-labs>
 
+## Derive Macro Experiment
+
+The derive macro experiment lives in `ratatui-derive`. It currently provides
+`FromRect`, a proc macro for named layout-area structs that generates
+`impl From<Rect> for YourStruct`.
+
+The API is experimental and published with a beta version while the name,
+attribute grammar, and generated public contract are evaluated in real
+applications.
+
+```rust
+use ratatui_core::layout::Rect;
+use ratatui_labs::derive::FromRect;
+
+#[derive(FromRect)]
+#[layout(horizontal, spacing = 2, crate = ratatui_core)]
+struct ButtonDemoAreas {
+    #[length(46)]
+    gallery: Rect,
+
+    #[min(34)]
+    debug: Rect,
+}
+
+let area = Rect::new(0, 0, 100, 20);
+let areas = ButtonDemoAreas::from(area);
+assert_eq!(areas.gallery.width, 46);
+```
+
 ## Related Crates And Overlap
 
 This reservation may overlap with:

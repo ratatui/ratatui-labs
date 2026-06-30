@@ -1,0 +1,5 @@
+error: expected #[ratio(numerator, denominator)]
+ --> tests/ui/fail/bad_ratio.rs:7:5
+  |
+7 |     #[ratio(1)]
+  |     ^^^^^^^^^^^

@@ -1,0 +1,5 @@
+error: missing layout constraint attribute: add one of #[length(expr)], #[min(expr)], #[max(expr)], #[percentage(expr)], #[ratio(numerator, denominator)], or #[fill(expr)]
+ --> tests/ui/fail/missing_constraint.rs:7:5
+  |
+7 |     main: Rect,
+  |     ^^^^^^^^^^

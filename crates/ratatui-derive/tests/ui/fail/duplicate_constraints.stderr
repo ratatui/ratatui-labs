@@ -1,0 +1,5 @@
+error: field can only have one layout constraint attribute
+ --> tests/ui/fail/duplicate_constraints.rs:8:5
+  |
+8 |     #[min(1)]
+  |     ^^^^^^^^^
