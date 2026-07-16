@@ -76,6 +76,24 @@ let frame = FrameSnapshot::new(Rect::new(0, 0, 20, 1))
 assert_eq!(frame.route_position((2, 0)).unwrap().id, "save");
 ```
 
+## Text Wrapping Experiment
+
+The `ratatui-textwrap` experiment materializes styled `Span`, `Line`, and `Text` inputs as owned,
+wrapped text. The umbrella crate exposes it as `ratatui_labs::textwrap`; the focused
+[`ratatui-textwrap` README](../ratatui-textwrap/README.md) is the canonical usage guide.
+
+```rust
+use ratatui_core::text::Line;
+use ratatui_labs::textwrap::{TextWrapper, WrapAlgorithm};
+
+let wrapping = TextWrapper::new().algorithm(WrapAlgorithm::OptimalFit);
+let wrapped = wrapping.wrap(Line::from("alpha beta"), 8);
+assert_eq!(wrapped.lines.len(), 2);
+```
+
+Custom widgets can call `textwrap::algorithms::paragraph::wrap_line` or the line-level first-fit and
+optimal-fit functions without constructing a complete `Text`.
+
 The crate points at the main Ratatui project rather than a separate
 implementation repository:
 
@@ -122,6 +140,7 @@ This reservation may overlap with:
 - `ratatui-unstable`, `ratatui-experimental`, and future unstable API policy.
 - the experimental `ratatui-action` and `ratatui-command-palette` crates in this workspace.
 - the experimental `ratatui-layout` crate in this workspace.
+- the experimental `ratatui-textwrap` crate in this workspace.
 
 Any future implementation should coordinate with those crates or clearly explain
 the difference before publishing a non-reservation release.

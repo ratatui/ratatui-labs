@@ -1,0 +1,28 @@
+[package]
+name = "ratatui-textwrap"
+version = "0.0.1-alpha.0"
+publish = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+rust-version.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "Experimental owned wrapping for styled Ratatui text."
+readme = "README.md"
+include = ["Cargo.toml", "README.md", "src/**/*.rs"]
+
+[dependencies]
+# Keep this aligned with the umbrella crate so the workspace's direct-minimal dependency check can
+# resolve one `ratatui-core` version.
+ratatui-core = "0.1.2"
+textwrap = { version = "0.16", default-features = false, features = ["smawk"] }
+
+[dev-dependencies]
+pretty_assertions = "1"
+ratatui = { version = "0.30", features = ["unstable-rendered-line-info"] }
+rstest = "0.26"
+
+[lints]
+workspace = true
