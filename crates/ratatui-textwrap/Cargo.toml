@@ -11,7 +11,7 @@ keywords.workspace = true
 categories.workspace = true
 description = "Experimental owned wrapping for styled Ratatui text."
 readme = "README.md"
-include = ["Cargo.toml", "README.md", "src/**/*.rs"]
+include = ["Cargo.toml", "README.md", "docs/**/*.md", "src/**/*.rs"]
 
 [dependencies]
 # Keep this aligned with the umbrella crate so the workspace's direct-minimal dependency check can
