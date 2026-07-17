@@ -9,3 +9,5 @@ pub use ratatui_command_palette as command_palette;
 pub use ratatui_derive as derive;
 /// Frame-local UI coordination primitives.
 pub use ratatui_layout as layout;
+/// Owned styled-text wrapping.
+pub use ratatui_textwrap as textwrap;

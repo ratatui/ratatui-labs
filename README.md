@@ -16,7 +16,15 @@ grow into real experiments when there is a concrete design to test.
   APIs.
 - `crates/ratatui-layout` - experimental frame-local UI coordination primitives for visible
   regions, focus targets, pointer targets, cursor requests, and scroll metadata.
+- `crates/ratatui-textwrap` - experimental materialization of wrapped, styled Ratatui text.
 - `crates/ratatui-labs` - umbrella crate for labs-style experiments and prototype Ratatui work.
+
+## Text wrapping
+
+`ratatui-textwrap` precomputes styled `Text` at a requested terminal width. It compares textwrap's
+first-fit and optimal-fit algorithms with an explicit Paragraph-compatible legacy algorithm; the
+[same algorithms are also available at the `Line` level](crates/ratatui-textwrap/README.md#algorithm-choice)
+for custom widgets. The crate README is the canonical usage guide.
 
 ## Examples
 
