@@ -78,6 +78,10 @@
 //! source-position mapping, cursor mapping, indentation, hyphenation, or configurable optimal-fit
 //! penalties.
 //!
+//! The [design notes] explain the decisions behind the current API, the differences found while
+//! comparing it with Paragraph, and possible follow-up work. Those directions are evaluation
+//! topics, not commitments in the current release.
+//!
 //! [`CellWidth`]: ratatui_core::buffer::CellWidth
 //! [`Fragment`]: https://docs.rs/textwrap/0.16/textwrap/core/trait.Fragment.html
 //! [`Fragment` source]: https://github.com/mgeisler/textwrap/blob/4770e55af425a0cffb9ad8496599d2a1a4f5ed14/src/core.rs#L217-L230
@@ -91,6 +95,7 @@
 //! [`wrap_optimal_fit`]: https://docs.rs/textwrap/0.16/textwrap/wrap_algorithms/fn.wrap_optimal_fit.html
 //! [first-fit source]: https://github.com/mgeisler/textwrap/blob/4770e55af425a0cffb9ad8496599d2a1a4f5ed14/src/wrap_algorithms.rs#L336-L367
 //! [optimal-fit source]: https://github.com/mgeisler/textwrap/blob/4770e55af425a0cffb9ad8496599d2a1a4f5ed14/src/wrap_algorithms/optimal_fit.rs#L302-L381
+//! [design notes]: https://github.com/ratatui/ratatui-labs/blob/main/crates/ratatui-textwrap/docs/design.md
 #![warn(missing_docs)]
 #![warn(clippy::missing_docs_in_private_items)]
 #![warn(rustdoc::bare_urls)]

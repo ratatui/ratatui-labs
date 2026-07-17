@@ -85,6 +85,10 @@ compatibility surface are evaluated. It does not replace `Paragraph::wrap`, expo
 or provide stateful incremental wrapping, lazy layout, source-position mapping, cursor mapping,
 indentation, hyphenation, or custom optimal-fit penalties.
 
+The [design notes](docs/design.md) record why the current API has this shape, what the Paragraph
+comparison taught us, and which follow-up ideas remain open questions rather than promised
+features.
+
 The implementation follows textwrap's [fragment contract], [first-fit source], and [optimal-fit
 source]. `ParagraphCompat` follows Ratatui's [WordWrapper source] and [Paragraph integration].
 
