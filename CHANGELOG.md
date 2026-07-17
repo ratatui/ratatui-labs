@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2](https://github.com/ratatui/ratatui-labs/compare/ratatui-labs-v0.1.1...ratatui-labs-v0.1.2) - 2026-07-17
+
+### Added
+
+- *(textwrap)* add styled text wrapping experiment ([#12](https://github.com/ratatui/ratatui-labs/pull/12))
+
+## [0.0.1-alpha.0](https://github.com/ratatui/ratatui-labs/compare/ratatui-textwrap-v0.0.0...ratatui-textwrap-v0.0.1-alpha.0) - 2026-07-17
+
+### Added
+
+- *(textwrap)* add styled text wrapping experiment ([#12](https://github.com/ratatui/ratatui-labs/pull/12))
+
 ## [0.1.1](https://github.com/ratatui/ratatui-labs/compare/ratatui-labs-v0.1.0...ratatui-labs-v0.1.1) - 2026-06-30
 
 ### Other
