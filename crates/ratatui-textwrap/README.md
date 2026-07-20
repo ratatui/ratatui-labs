@@ -1,8 +1,12 @@
 # Ratatui Textwrap
 
-`ratatui-textwrap` precomputes wrapped, styled Ratatui text. It accepts strings, spans, lines, and
-other values that convert into `Text`, then returns an owned `Text<'static>` that can be cached or
-passed to another widget.
+`ratatui-textwrap` adapts the [`textwrap`][textwrap] crate's first-fit and optimal-fit line-breaking
+algorithms to styled Ratatui text. It prepares textwrap fragments from Ratatui graphemes, then
+rebuilds owned Ratatui lines while preserving their styles. A separate `ParagraphCompat` mode
+reproduces Ratatui Paragraph's reflow behavior.
+
+The crate accepts strings, spans, lines, and other values that convert into `Text`, then returns an
+owned `Text<'static>` that can be cached or passed to another widget.
 
 ## Usage
 
@@ -96,4 +100,5 @@ source]. `ParagraphCompat` follows Ratatui's [WordWrapper source] and [Paragraph
 [fragment contract]: https://docs.rs/textwrap/0.16/textwrap/core/trait.Fragment.html
 [optimal-fit source]: https://github.com/mgeisler/textwrap/blob/4770e55af425a0cffb9ad8496599d2a1a4f5ed14/src/wrap_algorithms/optimal_fit.rs#L302-L381
 [Paragraph integration]: https://github.com/ratatui/ratatui/blob/ratatui-v0.30.2/ratatui-widgets/src/paragraph.rs#L329-L355
+[textwrap]: https://docs.rs/textwrap/0.16/textwrap/
 [WordWrapper source]: https://github.com/ratatui/ratatui/blob/ratatui-v0.30.2/ratatui-widgets/src/reflow.rs#L29-L273

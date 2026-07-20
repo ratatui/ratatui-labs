@@ -1,5 +1,9 @@
 //! Wraps styled Ratatui text before it is rendered.
 //!
+//! [`WrapAlgorithm::FirstFit`] and [`WrapAlgorithm::OptimalFit`] adapt textwrap's low-level
+//! line-breaking algorithms to styled Ratatui graphemes. [`WrapAlgorithm::ParagraphCompat`] is a
+//! separate implementation that reproduces Ratatui Paragraph's reflow behavior.
+//!
 //! [`TextWrapper`] converts strings, spans, lines, and other values accepted by [`Text`] into an
 //! owned `Text<'static>` at a requested terminal width. The owned result can be cached until its
 //! source, width, or [`WrapAlgorithm`] changes, then rendered by an ordinary [`Paragraph`].
