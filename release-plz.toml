@@ -6,3 +6,7 @@ semver_check = true
 git_release_body = """
 {{ changelog | replace(from=" by @", to=" by ") }}
 """
+
+[[package]]
+name = "ratatui-textwrap"
+changelog_path = "crates/ratatui-textwrap/CHANGELOG.md"
