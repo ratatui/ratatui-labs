@@ -9,7 +9,7 @@ homepage.workspace = true
 rust-version.workspace = true
 keywords.workspace = true
 categories.workspace = true
-description = "Experimental owned wrapping for styled Ratatui text."
+description = "Styled Ratatui text wrapping with textwrap algorithms and Paragraph compatibility."
 readme = "README.md"
 include = ["Cargo.toml", "CHANGELOG.md", "README.md", "docs/**/*.md", "src/**/*.rs"]
 
