@@ -1293,7 +1293,7 @@ dependencies = [
 
 [[package]]
 name = "ratatui-labs"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
  "ratatui-action",
  "ratatui-command-palette",
@@ -1349,7 +1349,7 @@ dependencies = [
 
 [[package]]
 name = "ratatui-textwrap"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "pretty_assertions",
  "ratatui",
