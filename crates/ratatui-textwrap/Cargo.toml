@@ -2,6 +2,7 @@
 name = "ratatui-textwrap"
 version = "0.0.1"
 publish = true
+autobenches = false
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
@@ -20,9 +21,23 @@ ratatui-core = "0.1.2"
 textwrap = { version = "0.16", default-features = false, features = ["smawk"] }
 
 [dev-dependencies]
+criterion = { version = "0.8.2", features = ["csv_output", "html_reports"] }
 pretty_assertions = "1"
 ratatui = { version = "0.30", features = ["unstable-rendered-line-info"] }
 rstest = "0.26"
+stats_alloc = "0.1.10"
 
 [lints]
 workspace = true
+
+[[bench]]
+name = "textwrap-workflows"
+harness = false
+
+[[bench]]
+name = "textwrap-stress"
+harness = false
+
+[[bench]]
+name = "textwrap-allocations"
+harness = false

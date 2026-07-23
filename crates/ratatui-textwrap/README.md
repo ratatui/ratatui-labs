@@ -93,6 +93,16 @@ The [design notes](docs/design.md) record why the current API has this shape, wh
 comparison taught us, and which follow-up ideas remain open questions rather than promised
 features.
 
+## Benchmarks
+
+The benchmark suite compares native `Paragraph` wrapping with paragraph-compatible, first-fit, and
+optimal-fit materialization. It covers line counting, rendering, repeated cached rendering,
+terminal resizing, and scrolled viewports using deterministic styled inputs.
+
+See the [benchmark guide](docs/benchmarks.md) for the workload definitions and commands. The
+[latest checked-in results](docs/benchmark-results.md) record one machine-specific reference run;
+use Criterion baselines for before-and-after comparisons on the same machine.
+
 The implementation follows textwrap's [fragment contract], [first-fit source], and [optimal-fit
 source]. `ParagraphCompat` follows Ratatui's [WordWrapper source] and [Paragraph integration].
 
