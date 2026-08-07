@@ -27,10 +27,10 @@ future_scope = "derive macros and code generation helpers for Ratatui APIs"
 proc-macro = true
 
 [dependencies]
-darling = "0.23"
+darling = "0.24"
 proc-macro2 = "1.0.106"
 quote = "1.0.45"
-syn = { version = "2.0.118", features = ["full"] }
+syn = { version = "3.0.3", features = ["full"] }
 
 [dev-dependencies]
 ratatui = "0.30.2"
