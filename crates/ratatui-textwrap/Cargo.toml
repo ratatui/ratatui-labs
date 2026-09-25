@@ -22,7 +22,7 @@ textwrap = { version = "0.16", default-features = false, features = ["smawk"] }
 [dev-dependencies]
 pretty_assertions = "1"
 ratatui = { version = "0.30", features = ["unstable-rendered-line-info"] }
-rstest = "0.26"
+rstest = "0.27"
 
 [lints]
 workspace = true
