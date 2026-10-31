@@ -1,13 +1,13 @@
 //! Conversion between Ratatui graphemes and owned styled runs.
 //!
-//! `StyledPiece` is the owned unit shared by both wrapping implementations. A piece records text,
+//! `StyledPiece` is the owned unit used by the textwrap-backed algorithms. A piece records text,
 //! source span style, Ratatui cell width, and Ratatui whitespace classification. It does not apply
 //! the containing line or text style; those remain on the reconstructed [`Line`].
 //!
 //! `collect_graphemes` creates one piece per styled grapheme without applying a wrapping policy.
-//! The textwrap path coalesces pieces after assigning them to a word or whitespace, while Paragraph
-//! compatibility keeps the stream at grapheme granularity. `append` coalesces equal adjacent styles
-//! when it creates output spans.
+//! The textwrap path coalesces pieces after assigning them to a word or whitespace. Paragraph
+//! compatibility records graphemes as source byte ranges instead. `append` coalesces equal adjacent
+//! styles when it creates output spans.
 //!
 //! Ratatui's [`StyledGrapheme`] and [`CellWidth`] APIs define the classification and measurement
 //! semantics retained here. The tagged [`Ratatui text source`] shows the implementation used by the
@@ -80,20 +80,6 @@ pub fn collect_graphemes(line: &Line<'_>) -> Vec<StyledPiece> {
         .flat_map(|span| span.styled_graphemes(Style::new()))
         .map(|grapheme| StyledPiece::new(grapheme.symbol, grapheme.style, grapheme.is_whitespace()))
         .collect()
-}
-
-/// Builds an owned line from `pieces` and copies the source line metadata.
-///
-/// Keeping style and alignment on the [`Line`] preserves Ratatui's text-to-line-to-span style
-/// patch order and makes every physical line generated from one source line align identically.
-pub fn line_from(source: &Line<'_>, pieces: &[StyledPiece]) -> Line<'static> {
-    let mut spans = Vec::new();
-    append(&mut spans, pieces);
-    Line {
-        style: source.style,
-        alignment: source.alignment,
-        spans,
-    }
 }
 
 /// Adds `piece`, coalescing it with an adjacent piece of the same style and role.

@@ -20,9 +20,15 @@ ratatui-core = "0.1.2"
 textwrap = { version = "0.16", default-features = false, features = ["smawk"] }
 
 [dev-dependencies]
+criterion = "0.8.2"
 pretty_assertions = "1"
 ratatui = { version = "0.30", features = ["unstable-rendered-line-info"] }
 rstest = "0.27"
+unicode-width = "0.2.3"
 
 [lints]
 workspace = true
+
+[[bench]]
+name = "scroll"
+harness = false

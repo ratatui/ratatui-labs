@@ -5,8 +5,9 @@
 //! zero-width request stops before line breaking and returns the same text style and alignment with
 //! no lines.
 
-use ratatui_core::text::Text;
+use ratatui_core::text::{Line, Text};
 
+use crate::index::Rows;
 use crate::{WrapAlgorithm, algorithms};
 
 /// Configures how Ratatui text is wrapped into an owned value.
@@ -111,6 +112,44 @@ impl TextWrapper {
             alignment: input.alignment,
             style: input.style,
             lines,
+        }
+    }
+
+    /// Wraps only the last `height` rows of `text`, walking source lines from the end.
+    ///
+    /// This needs no index and costs time proportional to the source lines in view, regardless of
+    /// the length of `text`, which suits logs that stick to the bottom and change width often.
+    /// With [`WrapAlgorithm::ParagraphCompat`] the rows borrow span content from `text`. The result
+    /// keeps [`Text::style`] and [`Text::alignment`].
+    ///
+    /// ```
+    /// use ratatui::text::Text;
+    /// use ratatui_textwrap::TextWrapper;
+    ///
+    /// let text = Text::from("one\ntwo three four");
+    /// let tail = TextWrapper::new().tail(&text, 6, 2);
+    /// let tail: Vec<String> = tail.lines.iter().map(ToString::to_string).collect();
+    /// assert_eq!(tail, ["three", "four"]);
+    /// ```
+    #[must_use]
+    pub fn tail<'t>(&self, text: &'t Text<'_>, width: u16, height: usize) -> Text<'t> {
+        let mut rows = Rows::new(self.algorithm);
+        let mut reversed: Vec<Line<'t>> = Vec::with_capacity(height);
+        let mut line_rows = Vec::new();
+        for source in text.lines.iter().rev() {
+            if reversed.len() >= height {
+                break;
+            }
+            line_rows.clear();
+            rows.wrap_into(source, width, 0, usize::MAX, &mut line_rows);
+            let keep = line_rows.len().min(height - reversed.len());
+            reversed.extend(line_rows.drain(line_rows.len() - keep..).rev());
+        }
+        reversed.reverse();
+        Text {
+            alignment: text.alignment,
+            style: text.style,
+            lines: reversed,
         }
     }
 }

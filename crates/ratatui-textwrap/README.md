@@ -26,6 +26,30 @@ Wrapping allocates the owned `wrapped` value. Keep it while the source, algorith
 unchanged. Width is supplied to each call, so one `TextWrapper` configuration can serve a resizable
 view.
 
+## Scrolling large text
+
+Wrapping a whole document every frame costs time proportional to its length. For long logs and
+previews, wrap only the rows in view:
+
+- `TextWrapper::tail` draws the last rows with no state, for views that stick to the bottom.
+- `WrappedText` owns the text and the row count of each source line, maps any scroll offset to its
+  source line through a `WrappedLayout`, and recounts only the lines each edit touches.
+
+```rust
+use ratatui::text::Line;
+use ratatui::widgets::Paragraph;
+use ratatui_textwrap::{WrapAlgorithm, WrappedText};
+
+let mut log = WrappedText::new("", 40, WrapAlgorithm::ParagraphCompat { trim: false });
+log.push_line(Line::from("request handled"));
+let layout = log.layout();
+let paragraph = Paragraph::new(layout.tail(20));
+```
+
+At 65,535 wrapped rows, a frame scrolled anywhere costs about 0.2 ms including rendering, against
+about 140 ms for a wrapped `Paragraph` scrolled to the bottom. See the
+[design notes](docs/design.md#performance-evidence) for the full comparison.
+
 ## Algorithm choice
 
 | Algorithm         | Behavior                                                       | Use when                                                    |
@@ -86,8 +110,9 @@ overflowing line. `ParagraphCompat` omits that grapheme, matching Paragraph's hi
 
 `ratatui-textwrap` is an experiment, and its API may change while the configuration and
 compatibility surface are evaluated. It does not replace `Paragraph::wrap`, expose textwrap types,
-or provide stateful incremental wrapping, lazy layout, source-position mapping, cursor mapping,
-indentation, hyphenation, or custom optimal-fit penalties.
+or provide sub-line source-position mapping, cursor mapping, indentation, hyphenation, or custom
+optimal-fit penalties. `WrappedText` and `TextWrapper::tail` scroll large text by
+wrapping only the rows in view.
 
 The [design notes](docs/design.md) record why the current API has this shape, what the Paragraph
 comparison taught us, and which follow-up ideas remain open questions rather than promised
