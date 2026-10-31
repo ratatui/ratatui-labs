@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2](https://github.com/ratatui/ratatui-labs/compare/ratatui-textwrap-v0.0.1...ratatui-textwrap-v0.0.2) - 2026-10-31
+
+### Other
+
+- Bump the rust group across 1 directory with 9 updates ([#26](https://github.com/ratatui/ratatui-labs/pull/26))
+- *(textwrap)* clarify textwrap integration
+
 ## [0.0.1](https://github.com/ratatui/ratatui-labs/compare/ratatui-textwrap-v0.0.1-alpha.1...ratatui-textwrap-v0.0.1) - 2026-07-20
 
 ### Other

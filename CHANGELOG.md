@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4](https://github.com/ratatui/ratatui-labs/compare/ratatui-labs-v0.1.3...ratatui-labs-v0.1.4) - 2026-10-31
+
+### Other
+
+- *(textwrap)* release 0.0.1
+
+## [0.1.0-beta.1](https://github.com/ratatui/ratatui-labs/compare/ratatui-derive-v0.1.0-beta.0...ratatui-derive-v0.1.0-beta.1) - 2026-10-31
+
+### Other
+
+- Bump the rust group across 1 directory with 9 updates ([#26](https://github.com/ratatui/ratatui-labs/pull/26))
+
 ## [0.1.3](https://github.com/ratatui/ratatui-labs/compare/ratatui-labs-v0.1.2...ratatui-labs-v0.1.3) - 2026-07-17
 
 ### Other
