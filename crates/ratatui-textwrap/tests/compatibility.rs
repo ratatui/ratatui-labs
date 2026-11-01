@@ -16,7 +16,7 @@ use ratatui::layout::{Alignment, Rect};
 use ratatui::style::{Color, Modifier, Style, Stylize};
 use ratatui::text::{Line, Span, Text};
 use ratatui::widgets::{Paragraph, Widget, Wrap};
-use ratatui_textwrap::{TextWrapper, WrapAlgorithm};
+use ratatui_textwrap::{TextWrapper, WrapAlgorithm, WrappedText};
 use rstest::rstest;
 
 /// Compares the copied compatibility algorithm with both Paragraph trim policies.
@@ -34,6 +34,37 @@ fn paragraph_compat_matches_the_resolved_paragraph_oracle(#[case] trim: bool) {
                 actual, expected,
                 "Paragraph compatibility mismatch: case={case:?}, trim={trim}, width={width}"
             );
+        }
+    }
+}
+
+/// Checks that borrowed first-fit and optimal-fit rows equal their owned wrapping.
+#[rstest]
+#[case::first_fit(WrapAlgorithm::FirstFit)]
+#[case::optimal_fit(WrapAlgorithm::OptimalFit)]
+fn textwrap_rows_match_owned_wrapping_on_the_corpus(#[case] algorithm: WrapAlgorithm) {
+    let wrapper = TextWrapper::new().algorithm(algorithm);
+    for (case, source) in cases() {
+        let max_width = source.width().min(40) as u16 + 3;
+        for width in 0..=max_width {
+            let owned = wrapper.wrap(source.clone(), width);
+            let mut wrapped = WrappedText::new(source.clone(), width, algorithm);
+            let rows = wrapped.layout().rows(0, usize::MAX);
+            // Borrowed rows cannot join text across source spans, so compare styled cells.
+            let cells = |text: &Text<'_>| -> Vec<Vec<(String, Style)>> {
+                let line_cells = |line: &Line<'_>| {
+                    line.styled_graphemes(Style::new())
+                        .map(|grapheme| (grapheme.symbol.to_owned(), grapheme.style))
+                        .collect()
+                };
+                text.lines.iter().map(line_cells).collect()
+            };
+            assert_eq!(
+                cells(&rows),
+                cells(&owned),
+                "{algorithm:?} rows mismatch: case={case:?}, width={width}"
+            );
+            assert_eq!((rows.style, rows.alignment), (owned.style, owned.alignment));
         }
     }
 }

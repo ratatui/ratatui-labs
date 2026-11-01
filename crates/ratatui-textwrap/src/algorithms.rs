@@ -39,12 +39,19 @@
 
 use ratatui_core::text::Line;
 
+pub(crate) use self::row::RowBounds;
+pub use self::row::{Row, Segment};
+
 /// Styled word fragments consumed by textwrap.
 mod fragment;
+/// Lifetime-free grapheme records shared by the row producers.
+pub(crate) mod grapheme;
 /// Ratatui Paragraph's copied legacy line-wrapping algorithm.
 pub mod paragraph;
 /// Owned styled runs shared by line-breaking strategies.
 mod piece;
+/// Lifetime-free wrapped row records.
+mod row;
 /// Integration with textwrap's low-level line-breaking algorithms.
 pub mod textwrap;
 

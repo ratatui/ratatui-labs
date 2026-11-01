@@ -30,6 +30,26 @@
 //! [`algorithms`] module. Its functions expose owned line output without exposing textwrap
 //! fragments or Paragraph's internal queues.
 //!
+//! # Scrolling large text
+//!
+//! Wrapping a whole document every frame costs time proportional to its length. For long logs and
+//! previews, wrap only the rows in view:
+//!
+//! - [`TextWrapper::tail`] draws the last rows with no state, for views that stick to the bottom.
+//! - [`WrappedText`] owns the text and the row count of each source line, maps any scroll offset to
+//!   its source line through a [`WrappedLayout`], and recounts only the lines each edit touches.
+//!
+//! ```
+//! use ratatui::text::Line;
+//! use ratatui::widgets::Paragraph;
+//! use ratatui_textwrap::{WrapAlgorithm, WrappedText};
+//!
+//! let mut log = WrappedText::new("", 40, WrapAlgorithm::ParagraphCompat { trim: false });
+//! log.push_line(Line::from("request handled"));
+//! let layout = log.layout();
+//! let paragraph = Paragraph::new(layout.tail(20));
+//! ```
+//!
 //! # Choosing an algorithm
 //!
 //! - [`WrapAlgorithm::FirstFit`] is the default. It greedily fills each line.
@@ -78,9 +98,9 @@
 //!
 //! `ratatui-textwrap` is an experiment, and its public API may change while the configuration and
 //! compatibility surface are evaluated. The owned output and algorithm behavior described above
-//! are the current contract. The crate does not replace [`Paragraph::wrap`] or provide lazy layout,
-//! source-position mapping, cursor mapping, indentation, hyphenation, or configurable optimal-fit
-//! penalties.
+//! are the current contract. The crate does not replace [`Paragraph::wrap`] or provide
+//! source-position mapping beyond [`WrappedLayout::locate`], cursor mapping, indentation,
+//! hyphenation, or configurable optimal-fit penalties.
 //!
 //! The [design notes] explain the decisions behind the current API, the differences found while
 //! comparing it with Paragraph, and possible follow-up work. Those directions are evaluation
@@ -108,12 +128,24 @@
 
 /// Line-level wrapping algorithms for custom widgets and text-processing pipelines.
 pub mod algorithms;
+/// Chunked per-line row counts.
+mod counts;
+/// Scroll-position index over wrapped text.
+mod index;
+/// Owned text kept in step with its row index.
+mod wrapped;
 /// Public wrapping configuration and orchestration.
 mod wrapper;
 
 /// Selects the line-breaking strategy.
 #[doc(inline)]
 pub use algorithms::WrapAlgorithm;
+/// A wrapped row's source line and in-line row.
+#[doc(inline)]
+pub use index::RowPosition;
+/// Owned text, scrollable without wrapping all of it, and its up-to-date row layout.
+#[doc(inline)]
+pub use wrapped::{PendingLayout, WrappedLayout, WrappedText};
 /// Configures owned styled-text wrapping.
 #[doc(inline)]
 pub use wrapper::TextWrapper;
